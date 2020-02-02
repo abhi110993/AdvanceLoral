@@ -3,9 +3,9 @@ import java.util.HashSet;
 public class ServiceCenter {
 	int penalty;
 	String scid;
-	int capacity;
 	int curCapacity;
 	HashSet<DemandNode> allocations;
+	
 	/*
 	 * Boundary Vertices has at-least one of the following three properties:
 	 * (a) an outgoing edge to a vertex allotted to a different service center sj
@@ -13,6 +13,7 @@ public class ServiceCenter {
 	 * (c) an outgoing edge to an unprocessed demand vertex
 	 * 
 	 * */
+	//@askSir : Best of k boudary vertices-- Implement it
 	HashSet<DemandNode> boundaryVertices;
 	
 	/**
@@ -23,8 +24,16 @@ public class ServiceCenter {
 	public ServiceCenter(int penalty, String scid, int maxCap) {
 		this.penalty = penalty;
 		this.scid = scid;
-		this.capacity = maxCap;
-		this.curCapacity = 0;
+		this.curCapacity = maxCap;
 		allocations = new HashSet<DemandNode>();
 	}
+	
+	public void addAllocation(DemandNode demandNode) {
+		allocations.add(demandNode);
+		curCapacity--;
+		demandNode.assignAllocation(this);
+	}
+	
+	
+	
 }
