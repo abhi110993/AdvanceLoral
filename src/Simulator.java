@@ -8,13 +8,15 @@ public class Simulator {
 		Loral loral = new Loral();
 		Loral.demandMap = new HashMap<String, DemandNode>();
 		Loral.serviceMap = new HashMap<String, ServiceCenter>();
-		Loral.edgeMap = new HashMap<String, HashMap<String,Integer>>();
+		Loral.outgoingEdgeMap = new HashMap<String, HashMap<String,Integer>>();
+		Loral.incomingEdgeMap = new HashMap<String, HashMap<String,Integer>>();
 		// Order of loading service center first and then demand node must not be changed.
 		preprocess.loadServiceCenter();
 		preprocess.loadDemandNode();
 		preprocess.loadEdges();
 		preprocess.distanceMatrixToDemandNodes();
-		
+		Loral.threshold = Loral.serviceMap.size();
+		Loral.bestK = Loral.demandMap.size();
 		//Time calculation after preprocessing
 		long startTime = System.currentTimeMillis();
 		
@@ -22,7 +24,8 @@ public class Simulator {
 		
 		long endTime = System.currentTimeMillis();
 		System.out.println("Total Execution time in ms" + String.valueOf(endTime - startTime));
-	
+		// This will print all the allocation which the service center has attained.
+		loral.printAllInformation();
 	} 
 
 }

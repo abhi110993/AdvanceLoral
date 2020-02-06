@@ -46,18 +46,25 @@ public class PreProcessor {
     	String line="";
     	while((line=br.readLine()) != null) {
     		String[] lineSplit = line.split(",");
-    		if(!Loral.edgeMap.containsKey(lineSplit[0])) {
+    		if(!Loral.outgoingEdgeMap.containsKey(lineSplit[0])) {
     			HashMap<String,Integer> edgeWeight = new HashMap<String,Integer>();
     			edgeWeight.put(lineSplit[1],Integer.parseInt(lineSplit[2]));
-    			Loral.edgeMap.put(lineSplit[0],edgeWeight);
+    			Loral.outgoingEdgeMap.put(lineSplit[0],edgeWeight);
     		}else {
-    			Loral.edgeMap.get(lineSplit[0]).put(lineSplit[1],Integer.parseInt(lineSplit[2]));
+    			Loral.outgoingEdgeMap.get(lineSplit[0]).put(lineSplit[1],Integer.parseInt(lineSplit[2]));
     		}
-    		
+    		if(!Loral.incomingEdgeMap.containsKey(lineSplit[1])) {
+    			HashMap<String,Integer> edgeWeight = new HashMap<String,Integer>();
+    			edgeWeight.put(lineSplit[0],Integer.parseInt(lineSplit[2]));
+    			Loral.incomingEdgeMap.put(lineSplit[1],edgeWeight);
+    		}else {
+    			Loral.incomingEdgeMap.get(lineSplit[1]).put(lineSplit[0],Integer.parseInt(lineSplit[2]));
+    		}
     	}
     }
 	
 	public void distanceMatrixToDemandNodes() throws IOException{
+		Loral.dnNotAllocated = new PriorityQueue<DnToScToken>();
 		br = new BufferedReader(new FileReader(distanceMatrix));
     	String line="";
     	int i=0;
@@ -65,15 +72,16 @@ public class PreProcessor {
     		String[] lineSplit = line.split(",");
     		DemandNode demandNode = demandNodeIndexMapping.get(i);
     		for(int j=demandNodeIndexMapping.size();j<Loral.serviceMap.size()+demandNodeIndexMapping.size();j++) {
-    			System.out.println("i=" +i+" j="+j + " val=" + lineSplit[j]);
+    			//System.out.println("i=" +i+" j="+j + " val=" + lineSplit[j]);
     			/*
     			 * demandNodeIndexMapping and serviceCenterIndexMapping starts from 0. 
     			 * That's why j-size of total number of demand nodes.
     			 * For more understanding check loadServiceCenter function.
     			 * */
     			if(!lineSplit[j].contains("Infinity")) {
-    				demandNode.addDistanceToSC_Detail(Integer.parseInt(lineSplit[j].trim()), serviceCenterIndexMapping.get(j-demandNodeIndexMapping.size()));
-    				Loral.dnNotAllocated.add(new DnToScTocken(Integer.parseInt(lineSplit[j].trim()), serviceCenterIndexMapping.get(j-demandNodeIndexMapping.size()), demandNode));
+    				ServiceCenter sc = serviceCenterIndexMapping.get(j-demandNodeIndexMapping.size());
+    				demandNode.addDistanceToSC_Detail(Integer.parseInt(lineSplit[j].trim()), sc);
+    				Loral.dnNotAllocated.add(new DnToScToken(Integer.parseInt(lineSplit[j].trim()), sc, demandNode));
     			}
     		}
     		i++;

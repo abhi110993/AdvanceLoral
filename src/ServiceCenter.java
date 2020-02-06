@@ -26,14 +26,20 @@ public class ServiceCenter {
 		this.scid = scid;
 		this.curCapacity = maxCap;
 		allocations = new HashSet<DemandNode>();
+		boundaryVertices = new HashSet<DemandNode>();
 	}
 	
-	public void addAllocation(DemandNode demandNode) {
+	public void addAllocation(DemandNode demandNode, int distance) {
 		allocations.add(demandNode);
 		curCapacity--;
 		demandNode.assignAllocation(this);
+		demandNode.distanceToAllocatedSC = distance;
 	}
 	
-	
-	
+	public boolean isfull() {
+		if(curCapacity<1)
+			return true;
+		else 
+			return false;
+	}
 }

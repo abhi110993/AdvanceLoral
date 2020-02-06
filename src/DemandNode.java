@@ -3,13 +3,14 @@ import java.util.*;
 public class DemandNode{
 	String dnid;
 	ServiceCenter allocation;
+	int distanceToAllocatedSC;
 	//Redundancy: Remove it if not used
-	PriorityQueue<DistanceDetail> distanceToSC;
+	ArrayList<DistanceDetail> distanceToSC;
 	
 	public DemandNode(String dnid, ServiceCenter allocation) {
 		this.dnid = dnid;
 		this.allocation = allocation;
-		distanceToSC = new PriorityQueue<DistanceDetail>();
+		distanceToSC = new ArrayList<DistanceDetail>();
 	}
 	
 	public void addDistanceToSC_Detail(int d, ServiceCenter sc) {
@@ -26,4 +27,5 @@ public class DemandNode{
 	public void assignAllocation(ServiceCenter sc) {
 		allocation = sc;
 	}
+	
 }
