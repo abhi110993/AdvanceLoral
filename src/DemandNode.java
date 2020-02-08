@@ -5,16 +5,20 @@ public class DemandNode{
 	ServiceCenter allocation;
 	int distanceToAllocatedSC;
 	//Redundancy: Remove it if not used
-	ArrayList<DistanceDetail> distanceToSC;
+	HashMap<ServiceCenter, Integer> distanceToSC;
 	
 	public DemandNode(String dnid, ServiceCenter allocation) {
 		this.dnid = dnid;
 		this.allocation = allocation;
-		distanceToSC = new ArrayList<DistanceDetail>();
+		distanceToSC = new HashMap<ServiceCenter, Integer>();
 	}
 	
-	public void addDistanceToSC_Detail(int d, ServiceCenter sc) {
-		distanceToSC.add(new DistanceDetail(d, sc));
+	public void addDistanceToSC(int d, ServiceCenter sc) {
+		distanceToSC.put(sc,d);
+	}
+	
+	public int getDistanceToSC(ServiceCenter sc) {
+		return distanceToSC.get(sc);
 	}
 	
 	public boolean isAllocated() {

@@ -80,7 +80,7 @@ public class PreProcessor {
     			 * */
     			if(!lineSplit[j].contains("Infinity")) {
     				ServiceCenter sc = serviceCenterIndexMapping.get(j-demandNodeIndexMapping.size());
-    				demandNode.addDistanceToSC_Detail(Integer.parseInt(lineSplit[j].trim()), sc);
+    				demandNode.addDistanceToSC(Integer.parseInt(lineSplit[j].trim()), sc);
     				Loral.dnNotAllocated.add(new DnToScToken(Integer.parseInt(lineSplit[j].trim()), sc, demandNode));
     			}
     		}

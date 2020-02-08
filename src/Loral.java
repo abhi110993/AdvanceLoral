@@ -47,37 +47,95 @@ public class Loral {
 					if(k++==bestK)
 						break;
 					// This loop is to add the demand node and service center distance to the Tree Set.
-					for(DistanceDetail distanceDetail : demandNode.distanceToSC) {
+					for(Map.Entry<ServiceCenter, Integer> distanceDetail : demandNode.distanceToSC.entrySet()) {
 						/*
 						 * Verify whether it is correct or not;
 						if(distanceDetail.serviceCenter.isfull())
 							innerObjFn += distanceDetail.serviceCenter.penalty;
 						*/
 						// There's no point adding something whose distance is greater than the base objective function value
-						if(baseObjFn>distanceDetail.distance)
-							bestKBoundaryVertices.add(new BoundaryAndItsObjFn(distanceDetail.distance, demandNode,distanceDetail.serviceCenter));
+						if(baseObjFn>distanceDetail.getValue())
+							bestKBoundaryVertices.add(new BoundaryAndItsObjFn(distanceDetail.getValue(), demandNode,distanceDetail.getKey()));
 					}
 				}
-				// This hash set to take care that the service center is not repeated.
-				HashSet<ServiceCenter> visitedSC = new HashSet<ServiceCenter>();
-				visitedSC.add(token.serviceCenter);
+				// Initializing it to the base object function to campare it to all the cascading cost.
+				int minCascadeCost = baseObjFn;
+				ArrayList<CascadePath> minCascadeDetail = null;
 				for(BoundaryAndItsObjFn boundaryVertex : bestKBoundaryVertices) {
+					// This hash set to take care that the service center is not repeated.
+					HashSet<ServiceCenter> visitedSC = new HashSet<ServiceCenter>();
+					visitedSC.add(token.serviceCenter);
+					
+					// Since we are breaking the boundary vertex so we are subtracting the distance.
 					int cascadeObjFn = token.distance - boundaryVertex.demandNode.distanceToAllocatedSC;
 					
+					// List to store the path through which the cascading proceeds.
+					ArrayList<CascadePath> currentCascadeDetail = new ArrayList<CascadePath>();
+					
+					// Cascading Cost Calculation
+					cascadeObjFn += cascadePath(currentCascadeDetail, visitedSC, boundaryVertex.serviceCenter, boundaryVertex.demandNode);
+					
+					// Maintaining the minimum cascading list.
+					if(cascadeObjFn<minCascadeCost) {
+						minCascadeDetail = currentCascadeDetail;
+						minCascadeCost = cascadeObjFn;
+					}
 				}
 				
-				
+				// Check if the cascading needs to happen or not.
+				if(minCascadeDetail!=null) { 
+					// It means that cascading cost is less than the direct allocation of demand to service center.
+					performCascading(minCascadeDetail);
+					objectiveFunction+=minCascadeCost;
+				}
+				else {
+					// It means that the base condition was the perfect choice.
+					token.serviceCenter.addAllocation(token.demandNode,token.distance);
+					updateBoundaryVertices(token.serviceCenter,token.demandNode);
+					// Now we are checking if the incoming demand nodes to the token demand node has become boundary vertices or not.
+					if(incomingEdgeMap.get(token.demandNode.dnid)!=null) {
+						for(Map.Entry<String, Integer> entry : incomingEdgeMap.get(token.demandNode.dnid).entrySet()) {
+							if(!identifyServiceCenter(entry.getKey())) { 
+								DemandNode dnode = demandMap.get(entry.getKey());
+								// If the demand node is allocated to a service center then only we require to check whether it is a boundary vertices or not.
+								if(dnode.isAllocated())
+									updateBoundaryVertices(dnode.allocation,dnode);
+							}
+						}
+					}
+					objectiveFunction += baseObjFn;
+				}
 			}
 		}
+		
+		System.out.println("*************The total objective cost is : " + objectiveFunction + "*************");
 	}
 	
-	public int cascadePath(int objectiveFunction, HashSet<ServiceCenter> visitedSC, ServiceCenter serviceCenter, DemandNode demandNode) {
+	public int cascadePath(ArrayList<CascadePath> cascadeList,HashSet<ServiceCenter> visitedSC, ServiceCenter serviceCenter, DemandNode demandNode) {
 		// Cascading happens till the time the visited service center length becomes equal to the threshold. 
 		while(visitedSC.size()<threshold) {
 			
 		}
 		visitedSC.add(serviceCenter);
 		return 0;
+	}
+	
+	public void performCascading(ArrayList<CascadePath> cascadeList) {
+		for(CascadePath path : cascadeList) {
+			path.serviceCenter.addAllocation(path.demandNode,path.distance);
+			updateBoundaryVertices(path.serviceCenter,path.demandNode);
+			// Now we are checking if the incoming demand nodes to the token demand node has become boundary vertices or not.
+			if(incomingEdgeMap.get(path.demandNode.dnid)!=null) {
+				for(Map.Entry<String, Integer> entry : incomingEdgeMap.get(path.demandNode.dnid).entrySet()) {
+					if(!identifyServiceCenter(entry.getKey())) { 
+						DemandNode dnode = demandMap.get(entry.getKey());
+						// If the demand node is allocated to a service center then only we require to check whether it is a boundary vertices or not.
+						if(dnode.isAllocated())
+							updateBoundaryVertices(dnode.allocation,dnode);
+					}
+				}
+			}
+		}
 	}
 	
 	/*
