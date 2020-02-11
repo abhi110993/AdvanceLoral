@@ -36,6 +36,15 @@ public class ServiceCenter {
 		demandNode.distanceToAllocatedSC = distance;
 	}
 	
+	public void removeAllocation(DemandNode demandNode) {
+		allocations.remove(demandNode);
+		curCapacity++;
+		demandNode.assignAllocation(null);
+		demandNode.distanceToAllocatedSC = Integer.MAX_VALUE;
+		if(boundaryVertices.contains(demandNode))
+			boundaryVertices.remove(demandNode);
+	}
+	
 	public boolean isfull() {
 		if(curCapacity<1)
 			return true;

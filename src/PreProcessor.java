@@ -64,7 +64,7 @@ public class PreProcessor {
     }
 	
 	public void distanceMatrixToDemandNodes() throws IOException{
-		Loral.dnNotAllocated = new PriorityQueue<DnToScToken>();
+		Loral.demandNodeProcessQueue = new PriorityQueue<DnToScToken>();
 		br = new BufferedReader(new FileReader(distanceMatrix));
     	String line="";
     	int i=0;
@@ -81,7 +81,7 @@ public class PreProcessor {
     			if(!lineSplit[j].contains("Infinity")) {
     				ServiceCenter sc = serviceCenterIndexMapping.get(j-demandNodeIndexMapping.size());
     				demandNode.addDistanceToSC(Integer.parseInt(lineSplit[j].trim()), sc);
-    				Loral.dnNotAllocated.add(new DnToScToken(Integer.parseInt(lineSplit[j].trim()), sc, demandNode));
+    				Loral.demandNodeProcessQueue.add(new DnToScToken(Integer.parseInt(lineSplit[j].trim()), sc, demandNode));
     			}
     		}
     		i++;

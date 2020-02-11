@@ -15,8 +15,12 @@ public class Simulator {
 		preprocess.loadDemandNode();
 		preprocess.loadEdges();
 		preprocess.distanceMatrixToDemandNodes();
+		// Threshold is for limiting the cascading length
 		Loral.threshold = Loral.serviceMap.size();
+		
+		// BestK is for limiting the boundary nodes to service node pairs for cascading. 
 		Loral.bestK = Loral.demandMap.size();
+		
 		//Time calculation after preprocessing
 		long startTime = System.currentTimeMillis();
 		
