@@ -24,17 +24,37 @@ class rearrange{
     int n;
     int s;
     int e;
+    
     rearrange(String nodes, String edges, String servicenodes){
         this.nodes = nodes;
         this.edges = edges;
         this.servicenodes = servicenodes;
-        this.rearrangednodes = "rearrangednodes.txt";
-        this.nodes_service_costMatrix = "nodes_service_costMatrix.txt";
-        this.costMatrix = "cost_matrix.txt";
-        n=9;
-        s=4;
-        d=5;
-        e=0;
+        this.rearrangednodes = "./dataset/rearrangednodes.txt";
+        this.nodes_service_costMatrix = "./dataset/nodes_service_costMatrix.txt";
+        this.costMatrix = "./dataset/cost_matrix.txt";
+        n=16;
+        s=5;
+        d=11;
+        e=37;
+    }
+    
+    void customizedPickServiceNodes(int k) throws IOException{
+    	ArrayList<String> nodeList = new ArrayList<>();
+        Scanner read = new Scanner (new File(nodes));
+        while(read.hasNextLine()){
+            nodeList.add(read.nextLine());
+        }
+        int proportion = 1;
+        BufferedWriter service = new BufferedWriter(new FileWriter(servicenodes)); 
+        int c = 0;
+        for(int i=0; i<k; i++){
+            System.out.println("Picking-->"+c);
+            service.write(nodeList.get(c));
+            c += proportion;
+            if(i+1<k)
+            	service.newLine();
+        }
+        service.close();
     }
     
     void pickServiceNodes(int k, int size) throws IOException{
@@ -61,7 +81,6 @@ class rearrange{
         while(read.hasNextLine()){
             String st = read.nextLine();
             if(!Service.contains(st)){
-                s++;
                 Service.add(st);
             }
         }
@@ -69,10 +88,8 @@ class rearrange{
         read = new Scanner (new File(nodes));
         BufferedWriter clean = new BufferedWriter(new FileWriter(rearrangednodes)); 
         while(read.hasNextLine()){
-            n++;
             String st = read.nextLine();
             if(!Service.contains(st)){
-                d++;
                 clean.write(st);
                 clean.newLine();
             }
@@ -87,7 +104,7 @@ class rearrange{
     
     void prepareServiceNodesFile() throws FileNotFoundException, IOException{
         Scanner read = new Scanner (new File(servicenodes));
-        BufferedWriter service = new BufferedWriter(new FileWriter("finalservice.txt"));
+        BufferedWriter service = new BufferedWriter(new FileWriter("./Resource/finalservice.txt"));
         Random r_c = new Random();
         Random r_p = new Random();
         while(read.hasNextLine()){
@@ -142,11 +159,11 @@ class rearrange{
                 }
                 String dest = read1.nextLine();
                 DijkstraShortestPath dijkstraAlg = new DijkstraShortestPath(graph,src,dest);
-                double cost = dijkstraAlg.getPathLength();        
+                int cost = (int)dijkstraAlg.getPathLength();        
                 //DefaultWeightedEdge hop = (DefaultWeightedEdge) dijkstraAlg.getPathEdgeList().get(0);
                 System.out.println("Path between "+src+"->"+dest+" cost:"+cost);
                 //System.out.println("\tNext Hop:"+graph.getEdgeTarget(hop));
-                output1.write(Double.toString(cost));
+                output1.write("" + cost);
                 //output2.write(graph.getEdgeTarget(hop));
                 flag = true;
             }
@@ -162,11 +179,12 @@ class rearrange{
     }
     
     void getCostMatrix() throws FileNotFoundException, IOException{
-        String str = new String();
+        String str = "";
         for(int i=0; i<d; i++){
-            //str += String.valueOf(Double.MAX_VALUE)+",";
-            str += "1000,";
+            str += "Infinity,";
+        	//str += i+" ";
         }
+        System.out.println(str);
         Scanner read = new Scanner (new File(nodes_service_costMatrix));
         BufferedWriter output1 = new BufferedWriter(new FileWriter(costMatrix));
         int count =0 ;
@@ -182,11 +200,13 @@ class rearrange{
 public class AllpairCostMatrix {
 
     public static void main(String[] args) throws IOException {
-        String nodes = "nodes.txt";
-        String edges = "edges.txt";
-        String servicenodes = "servicenodes.txt";
+        String nodes = "./dataset/nodes.txt";
+        String edges = "./dataset/edges.txt";
+        String servicenodes = "./dataset/servicenodes.txt";
         rearrange rearr = new rearrange(nodes,edges,servicenodes);
-        rearr.pickServiceNodes(4,9);
+        //rearr.pickServiceNodes(4,9);
+        // Giving the size of the service nodes
+        rearr.customizedPickServiceNodes(rearr.s);
         rearr.rearrangenodes();
         rearr.getNode_Service_costMatrix();
         rearr.getCostMatrix();

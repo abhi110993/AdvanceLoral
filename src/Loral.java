@@ -16,7 +16,7 @@ public class Loral {
 		while(!demandNodeProcessQueue.isEmpty()) {
 			// Token to get the service center and demand node with the minimum distance between them.
 			DnToScToken token = demandNodeProcessQueue.poll();
-			System.out.println("Token Processed : Demand Node = " + token.demandNode.dnid + " Service Center = " + token.serviceCenter.scid);
+			System.out.println("Token Processed : Demand Node = " + token.demandNode.dnid + " Service Center = " + token.serviceCenter.scid + " Distance = " + token.distance);
 			if(token==null || token.demandNode.isAllocated())
 				continue;
 			// If the service center has the capacity then allocate the demand node to the service center.
@@ -58,6 +58,7 @@ public class Loral {
 							bestKBoundaryVertices.add(new BoundaryAndItsObjFn(distanceDetail.getValue(), demandNode,distanceDetail.getKey()));
 					}
 				}
+				
 				// Initializing it to the base object function to campare it to all the cascading cost.
 				int minCascadeCost = baseObjFn;
 				SinglyLinkedList minCascadeDetail = null;
@@ -88,8 +89,21 @@ public class Loral {
 				}
 				
 				// Check if the cascading needs to happen or not.
-				if(minCascadeDetail!=null) { 
+				if(minCascadeCost<baseObjFn) { 
 					// It means that cascading cost is less than the direct allocation of demand to service center.
+					token.serviceCenter.addAllocation(token.demandNode,token.distance);
+					updateBoundaryVertices(token.serviceCenter,token.demandNode);
+					// Now we are checking if the incoming demand nodes to the token demand node has become boundary vertices or not.
+					if(incomingEdgeMap.get(token.demandNode.dnid)!=null) {
+						for(Map.Entry<String, Integer> entry : incomingEdgeMap.get(token.demandNode.dnid).entrySet()) {
+							if(!identifyServiceCenter(entry.getKey())) { 
+								DemandNode dnode = demandMap.get(entry.getKey());
+								// If the demand node is allocated to a service center then only we require to check whether it is a boundary vertices or not.
+								if(dnode.isAllocated())
+									updateBoundaryVertices(dnode.allocation,dnode);
+							}
+						}
+					}
 					performCascading(minCascadeDetail);
 					objectiveFunction+=minCascadeCost;
 				}

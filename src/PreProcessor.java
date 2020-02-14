@@ -6,7 +6,7 @@ public class PreProcessor {
 	private String serviceDetails = "./Resource/finalservice.txt";
 	private String allNodesDetails = "./Resource/nodes.txt";
 	private String allEdgeDetails = "./Resource/edges.txt";
-	private String distanceMatrix = "./Resource/nodes_service_costMatrix.txt";
+	private String distanceMatrix = "./Resource/cost_matrix.txt";
 	private BufferedReader br;
 	private HashMap<Integer, DemandNode> demandNodeIndexMapping = new HashMap<Integer, DemandNode>();
 	private HashMap<Integer, ServiceCenter> serviceCenterIndexMapping = new HashMap<Integer, ServiceCenter>();
@@ -68,6 +68,8 @@ public class PreProcessor {
 		br = new BufferedReader(new FileReader(distanceMatrix));
     	String line="";
     	int i=0;
+    	System.out.println("DemandNodeIndexMapSize : " + demandNodeIndexMapping.size());
+    	System.out.println("ServiceNodeIndexMapSize : " + serviceCenterIndexMapping.size());
     	while((line=br.readLine()) != null && i<demandNodeIndexMapping.size()) {
     		String[] lineSplit = line.split(",");
     		DemandNode demandNode = demandNodeIndexMapping.get(i);

@@ -1,9 +1,0 @@
-Infinity,Infinity,Infinity,Infinity,Infinity,10,9,Infinity,12
-Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,6,3
-Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,4,6
-Infinity,Infinity,Infinity,Infinity,Infinity,9,2,Infinity,Infinity
-Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,1
-Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity
-Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity
-Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity
-Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity,Infinity
