@@ -3,7 +3,7 @@ import java.io.*;
 
 public class PreProcessor {
     
-	private String serviceDetails = "./Resource/finalservice.txt";
+	private String serviceDetails = "./Resource/servicenodes.txt";
 	private String allNodesDetails = "./Resource/nodes.txt";
 	private String allEdgeDetails = "./Resource/edges.txt";
 	private String distanceMatrix = "./Resource/cost_matrix.txt";

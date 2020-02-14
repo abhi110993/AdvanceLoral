@@ -12,15 +12,27 @@ public class Loral {
 	 *  This method performs the Loral Algorithm.
 	 * */
 	public void performLoral() {
+		int tokenIndex=1;
 		//For loop for demand nodes being unassigned to the service center.
-		while(!demandNodeProcessQueue.isEmpty()) {
+		//while(!demandNodeProcessQueue.isEmpty()) {
+		while(tokenIndex<14) {
 			// Token to get the service center and demand node with the minimum distance between them.
 			DnToScToken token = demandNodeProcessQueue.poll();
-			System.out.println("Token Processed : Demand Node = " + token.demandNode.dnid + " Service Center = " + token.serviceCenter.scid + " Distance = " + token.distance);
+			if(token.demandNode.isAllocated())
+				System.out.println(tokenIndex+++" Already Allocated Token Processed : Demand Node = " + token.demandNode.dnid + " Service Center = " + token.serviceCenter.scid + " Distance = " + token.distance);
+			else
+				System.out.println(tokenIndex+++" Token Processed : Demand Node = " + token.demandNode.dnid + " Service Center = " + token.serviceCenter.scid + " Distance = " + token.distance);
+
 			if(token==null || token.demandNode.isAllocated())
 				continue;
+
+			if(tokenIndex==14)
+				System.out.println("Check-------------------------------CAP-----"+token.serviceCenter.curCapacity);
 			// If the service center has the capacity then allocate the demand node to the service center.
-			if(token.serviceCenter.curCapacity>0) {
+			if(!token.serviceCenter.isfull()) {
+
+				if(tokenIndex==14)
+					System.out.println("OOPS::: ERROR");
 				// Since the capacity is >0, so the increase in objective function is only because of the distance. 
 				objectiveFunction+=token.distance;
 				token.serviceCenter.addAllocation(token.demandNode,token.distance);
@@ -37,8 +49,13 @@ public class Loral {
 					}
 				}
 			}else {
+				if(tokenIndex==14)
+					System.out.println("Cascading is on...");
 				//Cascading needs to be implemented here..
 				int baseObjFn = token.distance + token.serviceCenter.penalty;
+
+				if(tokenIndex==14)
+					System.out.println("Base Obj Fn = " + baseObjFn);
 				TreeSet<BoundaryAndItsObjFn> bestKBoundaryVertices = new TreeSet<BoundaryAndItsObjFn>();
 				// This loop is to iterate over all the boundary vertices
 				int k=0;
@@ -72,6 +89,10 @@ public class Loral {
 					
 					// Since we are breaking the boundary vertex so we are subtracting the distance.
 					int cascadeObjFn = token.distance - boundaryVertex.demandNode.distanceToAllocatedSC;
+					
+
+					if(tokenIndex==13)
+						System.out.println("Cascade Ob fn initial:" + cascadeObjFn);
 					
 					// List to store the path through which the cascading proceeds.
 					SinglyLinkedList currentCascadeDetail = new SinglyLinkedList();
@@ -289,7 +310,7 @@ public class Loral {
 	public void printAllInformation() {
 		System.out.println("------------------------------------------------");
 		for(Map.Entry<String, ServiceCenter> entry : serviceMap.entrySet()) {
-			System.out.println("Service Center : " + entry.getKey());
+			System.out.println("Service Center : " + entry.getKey() + " Current Capacity : " + entry.getValue().curCapacity + " Penalty : " + entry.getValue().penalty);
 			for(DemandNode demandNode : entry.getValue().allocations) {
 				System.out.println("Demand Node Allocated : " + demandNode.dnid);
 			}

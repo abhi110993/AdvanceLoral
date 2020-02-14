@@ -21,6 +21,9 @@ public class Simulator {
 		// BestK is for limiting the boundary nodes to service node pairs for cascading. 
 		Loral.bestK = Loral.demandMap.size();
 		
+		//Initial Stage
+		loral.printAllInformation();
+		
 		//Time calculation after preprocessing
 		long startTime = System.currentTimeMillis();
 		
