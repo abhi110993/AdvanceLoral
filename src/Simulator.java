@@ -22,7 +22,7 @@ public class Simulator {
 		Loral.bestK = Loral.demandMap.size();
 		
 		//Initial Stage
-		loral.printAllInformation();
+		//loral.printAllInformation();
 		
 		//Time calculation after preprocessing
 		long startTime = System.currentTimeMillis();
@@ -30,7 +30,7 @@ public class Simulator {
 		loral.performLoral();
 		
 		long endTime = System.currentTimeMillis();
-		System.out.println("Total Execution time in ms" + String.valueOf(endTime - startTime));
+		System.out.println("Total Execution time in ms = " + String.valueOf(endTime - startTime));
 		// This will print all the allocation which the service center has attained.
 		loral.printAllInformation();
 	} 
