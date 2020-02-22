@@ -10,7 +10,7 @@ public class Loral {
 	static int minCascadeCost;
 	int objectiveFunction = 0;
 	// This variable is only for testing.
-	int checkIndex = 13;
+	int checkIndex = 16;
 	// To store the cascade list which gives out the minimum cascade cost.
 	CascadeList finalCascadeList;
 	/*
@@ -60,7 +60,7 @@ public class Loral {
 
 				if(tokenIndex==checkIndex+1)
 					System.out.println("Base Obj Fn = " + baseObjFn);
-				TreeSet<BoundaryAndItsObjFn> bestKBoundaryVertices = new TreeSet<BoundaryAndItsObjFn>();
+				PriorityQueue<BoundaryAndItsObjFn> bestKBoundaryVertices = new PriorityQueue<BoundaryAndItsObjFn>();
 				// This loop is to iterate over all the boundary vertices
 				int k=0;
 				for(DemandNode demandNode : token.serviceCenter.boundaryVertices) {
@@ -75,19 +75,25 @@ public class Loral {
 							innerObjFn += distanceDetail.serviceCenter.penalty;
 						*/
 						// There's no point adding something whose distance is greater than the base objective function value
-						if(baseObjFn>distanceDetail.getValue() && (demandNode.allocation!=distanceDetail.getKey()))
+						if(baseObjFn>distanceDetail.getValue() && (demandNode.allocation!=distanceDetail.getKey())) {
 							bestKBoundaryVertices.add(new BoundaryAndItsObjFn(distanceDetail.getValue()-demandNode.distanceToAllocatedSC, demandNode,distanceDetail.getKey()));
+							if(tokenIndex==checkIndex+1)
+								System.out.println("Best K boundary vertex addition : "+ demandNode.dnid+ "-" +distanceDetail.getKey().scid+"="+(distanceDetail.getValue()-demandNode.distanceToAllocatedSC));
+							
+						}
 					}
 				}
 				
 				// Initializing it to the base object function to campare it to all the cascading cost.
 				minCascadeCost = baseObjFn;
-				//CascadeList minCascadeDetail = null;
-				// Extract minimum
-				int iterationStep = 0;
 				
+				if(tokenIndex==checkIndex+1)
+					System.out.println("\nsize of bestKBoundaryVertices\n" + bestKBoundaryVertices.size());
+				
+				
+				int iterationStep = 0;
 				while((!bestKBoundaryVertices.isEmpty()) && (iterationStep++ < Loral.bestK)) {
-					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.pollFirst();
+					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// This hash set to take care that the service center is not repeated.
 					HashSet<ServiceCenter> visitedSC = new HashSet<ServiceCenter>();
 					visitedSC.add(token.serviceCenter);
@@ -177,20 +183,17 @@ public class Loral {
 		
 		// Update cascade list.
 		cascadeList.insertAtEnd(new CascadePath(serviceCenter, demandNode, distance));
-		// Adding the service center to the visited service center so that it is not further processed.
-		visitedSC.add(serviceCenter);
 		
 		if(!serviceCenter.isfull()) {
-			visitedSC.remove(serviceCenter);
+			//visitedSC.remove(serviceCenter);
 			if(cascadePathCost<minCascadeCost) {
 				copyPathToFinalList(cascadeList);
 				minCascadeCost = cascadePathCost;
 			}
 			return cascadePathCost;
 		} 
-		
 		else if(visitedSC.size() == threshold) {
-			visitedSC.remove(serviceCenter);
+			//visitedSC.remove(serviceCenter);
 			if(cascadePathCost + serviceCenter.penalty<minCascadeCost) {
 				copyPathToFinalList(cascadeList);
 				minCascadeCost = cascadePathCost + serviceCenter.penalty;
@@ -198,6 +201,8 @@ public class Loral {
 			return cascadePathCost + serviceCenter.penalty;
 		}
 		else {
+			// Adding the service center to the visited service center so that it is not further processed.
+			visitedSC.add(serviceCenter);
 			//Cascading needs to be implemented here.
 			// Base condition to check if we go ahead with the penalty.
 			int baseObjFn =  cascadePathCost + serviceCenter.penalty;
@@ -265,87 +270,7 @@ public class Loral {
 			return minCascadeCost;
 		}
 	}
-	/*
-	public int cascadePath(SinglyLinkedList cascadeList,HashSet<ServiceCenter> visitedSC, ServiceCenter serviceCenter, DemandNode demandNode) {
-		// Cascading happens till the time the visited service center length becomes equal to the threshold.
-		int cascadeCost = demandNode.getDistanceToSC(serviceCenter);
-		// Distance between demand node and service center.
-		int distance = demandNode.getDistanceToSC(serviceCenter);
 		
-		// Update cascade list.
-		cascadeList.insertAtEnd(new CascadePath(serviceCenter, demandNode,distance));
-		// Adding the service center to the visited service center so that it is not further processed.
-		visitedSC.add(serviceCenter);
-		
-		if(!serviceCenter.isfull()) {
-			visitedSC.remove(serviceCenter);
-			return cascadeCost;
-		} 
-		
-		else if(visitedSC.size() == threshold) {
-			visitedSC.remove(serviceCenter);
-			return cascadeCost + serviceCenter.penalty;
-		}
-		
-		else {
-			//Cascading needs to be implemented here.
-			// Base condition to check if we go ahead with the penalty.
-			int baseObjFn =  distance + serviceCenter.penalty;
-			
-			// Priority Queue to find the best pair of demand node and service center
-			PriorityQueue<BoundaryAndItsObjFn> bestKBoundaryVertices = new PriorityQueue<BoundaryAndItsObjFn>();
-			
-			// This loop is to iterate over all the boundary vertices
-			int k=0;
-			for(DemandNode boundaryDemandNode : serviceCenter.boundaryVertices) {
-				// Only best k demand vertices are allowed.
-				if(k++==bestK)
-					break;
-				
-				// This loop is to add the demand node and service center distance to the Tree Set.
-				for(Map.Entry<ServiceCenter, Integer> distanceDetail : boundaryDemandNode.distanceToSC.entrySet()) {
-					/*
-					 * Verify whether it is correct or not;
-					if(distanceDetail.serviceCenter.isfull())
-						innerObjFn += distanceDetail.serviceCenter.penalty;
-					*//*
-					// There's no point adding something whose distance is greater than the base objective function value
-					if((baseObjFn>distanceDetail.getValue()) && (!visitedSC.contains(distanceDetail.getKey())))
-						bestKBoundaryVertices.add(new BoundaryAndItsObjFn(distanceDetail.getValue(), boundaryDemandNode, distanceDetail.getKey()));
-				}
-			}
-			// Initializing it to the base object function to compare it to all the cascading cost.
-			int minCascadeCost = baseObjFn;
-			
-			int iterationStep = 0;
-			while((!bestKBoundaryVertices.isEmpty()) && (iterationStep++ < Loral.bestK)) {
-				BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
-				
-				// Since we are breaking the boundary vertex so we are subtracting the distance.
-				int cascadeObjFn = distance - boundaryVertex.demandNode.distanceToAllocatedSC;
-				
-				// Cascading Cost Calculation
-				if(!visitedSC.contains(boundaryVertex.serviceCenter))
-					cascadeObjFn += cascadePath(cascadeList, visitedSC, boundaryVertex.serviceCenter, boundaryVertex.demandNode);
-				else 
-					cascadeObjFn = Integer.MAX_VALUE;
-
-				// Maintaining the minimum cascading list.
-				if(cascadeObjFn<minCascadeCost) {
-					//minCascadeDetail = currentCascadeDetail;
-					minCascadeCost = cascadeObjFn;
-				}else {
-					// In my customized singly linked list the removal is done in constant time.
-					for(int i=visitedSC.size(); i< cascadeList.size;i++)
-						cascadeList.removeFromIndex(i);
-				}
-			}
-			
-			return minCascadeCost;
-		}
-	}
-	*/
-	
 	public void performCascading(CascadeList cascadeList) {
 		for(int i=0; i<cascadeList.size; i++) {
 			CascadePath path = cascadeList.list[i];
