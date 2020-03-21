@@ -16,8 +16,8 @@ public class Simulator {
 		preprocess.loadEdges();
 		preprocess.distanceMatrixToDemandNodes();
 		// Threshold is for limiting the cascading length
-		//Loral.threshold = Loral.serviceMap.size();
-		Loral.threshold = 1;
+		Loral.threshold = Loral.serviceMap.size();
+		//Loral.threshold = 5;
 		
 		// BestK is for limiting the boundary nodes to service node pairs for cascading. 
 		//Loral.bestK = Loral.demandMap.size();
@@ -27,14 +27,18 @@ public class Simulator {
 		//loral.printAllInformation();
 		
 		//Time calculation after preprocessing
-		long startTime = System.currentTimeMillis();
+		//double startTime = System.currentTimeMillis();
+		double startTime = System.nanoTime();
 		
 		loral.performLoral();
 		
-		long endTime = System.currentTimeMillis();
-		System.out.println("Total Execution time in ms = " + String.valueOf(endTime - startTime));
+		double endTime = System.nanoTime();
 		// This will print all the allocation which the service center has attained.
 		loral.printAllInformation();
+		System.out.println("Total Execution time in ns = " + (endTime - startTime));
+		System.out.println("Total Objective Function = " + loral.objectiveFunction);
+		System.out.println("Total Cost because of cascading = " + loral.totalPenalizeCost);
+		
 	} 
 
 }
