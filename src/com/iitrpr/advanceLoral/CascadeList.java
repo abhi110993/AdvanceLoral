@@ -1,8 +1,10 @@
+package com.iitrpr.advanceLoral;
+import com.iitrpr.advanceLoral.CascadePath;
 
 public class CascadeList {
 	
-	CascadePath[] list;
-	int size;
+	public CascadePath[] list;
+	public int size;
 	
 	public CascadeList() {
 		size=0;

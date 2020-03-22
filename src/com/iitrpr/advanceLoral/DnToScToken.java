@@ -1,10 +1,11 @@
+package com.iitrpr.advanceLoral;
 /*
  * This class contains the tocken which contains service center and demand node and their distance.
  * */
 public class DnToScToken implements Comparable<DnToScToken>{
-	int distance;
-	DemandNode demandNode;
-	ServiceCenter serviceCenter;
+	public int distance;
+	public DemandNode demandNode;
+	public ServiceCenter serviceCenter;
 	
 	public DnToScToken(int d, ServiceCenter sc, DemandNode dn){
 		distance = d;

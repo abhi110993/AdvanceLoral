@@ -1,8 +1,9 @@
+package com.iitrpr.advanceLoral;
 
 public class BoundaryAndItsObjFn implements Comparable<BoundaryAndItsObjFn>{
-	int deltaDistance;
-	DemandNode demandNode;
-	ServiceCenter serviceCenter;
+	public int deltaDistance;
+	public DemandNode demandNode;
+	public ServiceCenter serviceCenter;
 	
 	public BoundaryAndItsObjFn(int deltaDistance,DemandNode dn,ServiceCenter sc) {
 		this.deltaDistance = deltaDistance;

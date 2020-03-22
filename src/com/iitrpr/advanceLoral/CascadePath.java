@@ -1,10 +1,11 @@
+package com.iitrpr.advanceLoral;
 
 public class CascadePath {
 	
-	ServiceCenter serviceCenter;
-	DemandNode demandNode;
+	public ServiceCenter serviceCenter;
+	public DemandNode demandNode;
 	// Remove this if not used - redundancy
-	int distance;
+	public int distance;
 	
 	public CascadePath(ServiceCenter sc, DemandNode dn, int d) {
 		serviceCenter = sc;

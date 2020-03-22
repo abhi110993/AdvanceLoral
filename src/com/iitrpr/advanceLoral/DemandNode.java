@@ -1,11 +1,12 @@
+package com.iitrpr.advanceLoral;
 import java.util.*;
 
 public class DemandNode{
-	String dnid;
-	ServiceCenter allocation;
-	int distanceToAllocatedSC;
+	public String dnid;
+	public ServiceCenter allocation;
+	public int distanceToAllocatedSC;
 	//Redundancy: Remove it if not used
-	HashMap<ServiceCenter, Integer> distanceToSC;
+	public HashMap<ServiceCenter, Integer> distanceToSC;
 	
 	public DemandNode(String dnid, ServiceCenter allocation) {
 		this.dnid = dnid;

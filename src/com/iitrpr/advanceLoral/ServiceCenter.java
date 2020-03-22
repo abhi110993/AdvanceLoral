@@ -1,10 +1,11 @@
+package com.iitrpr.advanceLoral;
 import java.util.HashSet;
 
 public class ServiceCenter {
-	int penalty;
-	String scid;
-	int curCapacity;
-	HashSet<DemandNode> allocations;
+	public int penalty;
+	public String scid;
+	public int curCapacity;
+	public HashSet<DemandNode> allocations;
 	
 	/*
 	 * Boundary Vertices has at-least one of the following three properties:
@@ -14,7 +15,7 @@ public class ServiceCenter {
 	 * 
 	 * */
 	//@askSir : Best of k boudary vertices-- Implement it
-	HashSet<DemandNode> boundaryVertices;
+	public HashSet<DemandNode> boundaryVertices;
 	
 	/**
 	 * @param Penalty

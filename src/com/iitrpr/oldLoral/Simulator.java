@@ -1,5 +1,13 @@
+package com.iitrpr.oldLoral;
 import java.io.*;
 import java.util.HashMap;
+
+import com.iitrpr.oldLoral.PreProcessor;
+import com.iitrpr.advanceLoral.DemandNode;
+import com.iitrpr.oldLoral.Loral;
+import com.iitrpr.advanceLoral.ServiceCenter;
+
+
 
 public class Simulator {
 
@@ -37,8 +45,6 @@ public class Simulator {
 		loral.printAllInformation();
 		System.out.println("Total Execution time in ns = " + (endTime - startTime));
 		System.out.println("Total Objective Function = " + loral.objectiveFunction);
-		System.out.println("Total Cost because of cascading = " + loral.totalPenalizeCost);
-		
 	} 
 
 }
