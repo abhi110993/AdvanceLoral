@@ -24,24 +24,25 @@ class rearrange{
     int n;
     int s;
     int e;
-    int ratioDemandToService;
+    float ratioDemandToService;
     int penaltyRange;
     float ratioTotalCapacityToDemandNode;
     
-    rearrange(String nodes, String edges, String servicenodes){
+    rearrange(String nodes, String edges, String servicenodes, int noOfNodes, float DtoSRatio, int noOfEdges, int penRange, float totalCapToDRatio){
         this.nodes = nodes;
         this.edges = edges;
         this.servicenodes = servicenodes;
-        this.rearrangednodes = "./dataset/rearrangednodes.txt";
-        this.nodes_service_costMatrix = "./dataset/nodes_service_costMatrix.txt";
-        this.costMatrix = "./dataset/cost_matrix.txt";
-        n=23839;
-        ratioDemandToService = 299;
-        e=51794;
-        penaltyRange = 20; //Should be greater than 10
-        ratioTotalCapacityToDemandNode = 0.7f;
+        String ratiopath = ""+(int)DtoSRatio;
+        this.rearrangednodes = "./dataset/"+ratiopath+"/rearrangednodes.txt";
+        this.nodes_service_costMatrix = "./dataset/"+ratiopath+"/nodes_service_costMatrix.txt";
+        this.costMatrix = "./dataset/"+ratiopath+"/cost_matrix.txt";
+        n=noOfNodes;
+        ratioDemandToService = DtoSRatio;
+        e=noOfEdges;
+        penaltyRange = penRange; //Should be greater than 10
+        ratioTotalCapacityToDemandNode = totalCapToDRatio;
         
-        s=(n)/(ratioDemandToService+1);
+        s=(int) ((n)/(ratioDemandToService+1));
         d=n-s;
     }
     
@@ -111,7 +112,8 @@ class rearrange{
     
     void prepareServiceNodesFile() throws FileNotFoundException, IOException{
         Scanner read = new Scanner (new File(servicenodes));
-        BufferedWriter service = new BufferedWriter(new FileWriter("./Resource/finalservice.txt"));
+        String path = ""+(int)ratioDemandToService;
+        BufferedWriter service = new BufferedWriter(new FileWriter("./dataset/"+path+"/finalservice.txt"));
         Random r_c = new Random();
         Random r_p = new Random();
         while(read.hasNextLine()){
@@ -169,9 +171,6 @@ class rearrange{
                 String dest = read1.nextLine();
                 DijkstraShortestPath dijkstraAlg = new DijkstraShortestPath(graph,src,dest);
                 int cost = (int)dijkstraAlg.getPathLength();        
-                //DefaultWeightedEdge hop = (DefaultWeightedEdge) dijkstraAlg.getPathEdgeList().get(0);
-                //System.out.println("Path between "+src+"->"+dest+" cost:"+cost);
-                //System.out.println("\tNext Hop:"+graph.getEdgeTarget(hop));
                 output1.write("" + cost);
                 //output2.write(graph.getEdgeTarget(hop));
                 flag = true;
@@ -211,14 +210,25 @@ public class AllpairCostMatrix {
     public static void main(String[] args) throws IOException {
         String nodes = "./dataset/nodes.txt";
         String edges = "./dataset/edges.txt";
-        String servicenodes = "./dataset/servicenodes.txt";
-        rearrange rearr = new rearrange(nodes,edges,servicenodes);
-        //Input= #serviceNodes, #TotalNodes
-        rearr.pickServiceNodes(rearr.s,rearr.n);
-        //rearr.customizedPickServiceNodes(rearr.s);
-        rearr.rearrangenodes();
-        rearr.getNode_Service_costMatrix();
-        rearr.getCostMatrix();
-        rearr.prepareServiceNodesFile();
+       
+        
+        int n=23839;
+        int[] ratioDemandToService = {700,600,500,400,300};
+        int e=51794;
+        int penaltyRange = 20; //Should be greater than 10
+        float ratioTotalCapacityToDemandNode = 0.7f;
+        
+        for(int ratio : ratioDemandToService) {
+        	 String servicenodes = "./dataset/"+ratio+"/servicenodes.txt";
+        	 
+	        rearrange rearr = new rearrange(nodes,edges,servicenodes,n,ratio,e,penaltyRange,ratioTotalCapacityToDemandNode);
+	        //Input= #serviceNodes, #TotalNodes
+	        rearr.pickServiceNodes(rearr.s,rearr.n);
+	        //rearr.customizedPickServiceNodes(rearr.s);
+	        rearr.rearrangenodes();
+	        rearr.getNode_Service_costMatrix();
+	        rearr.getCostMatrix();
+	        rearr.prepareServiceNodesFile();
+        }
     }
 }

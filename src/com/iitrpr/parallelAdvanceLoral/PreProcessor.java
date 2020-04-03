@@ -1,5 +1,10 @@
-package com.iitrpr.advanceLoral;
+package com.iitrpr.parallelAdvanceLoral;
 import java.util.*;
+
+import com.iitrpr.advanceLoral.DemandNode;
+import com.iitrpr.advanceLoral.DnToScToken;
+import com.iitrpr.advanceLoral.ServiceCenter;
+
 import java.io.*;
 
 public class PreProcessor {
@@ -22,7 +27,7 @@ public class PreProcessor {
     		//int penalty, String scid, int maxCap, int curCapacity
     		ServiceCenter serviceCenter = new ServiceCenter(Integer.parseInt(lineSplit[8]),lineSplit[4],Integer.parseInt(lineSplit[7]));
     		serviceCenterIndexMapping.put(i,serviceCenter);
-    		AdvanceLoral.serviceMap.put(lineSplit[4],serviceCenter);
+    		ParallelAdvanceLoral.serviceMap.put(lineSplit[4],serviceCenter);
     		i++;
     	}
     }
@@ -33,9 +38,9 @@ public class PreProcessor {
     	int i=0;
     	while((line=br.readLine()) != null) {
     		String[] lineSplit = line.split(",");
-    		if(lineSplit[0]!=null && !lineSplit[0].equals("") && !AdvanceLoral.serviceMap.containsKey(lineSplit[0])) {
+    		if(lineSplit[0]!=null && !lineSplit[0].equals("") && !ParallelAdvanceLoral.serviceMap.containsKey(lineSplit[0])) {
     			DemandNode dn = new DemandNode(lineSplit[0],null);
-    			AdvanceLoral.demandMap.put(lineSplit[0], dn);
+    			ParallelAdvanceLoral.demandMap.put(lineSplit[0], dn);
     			demandNodeIndexMapping.put(i,dn);
     		}
     		i++;
@@ -47,25 +52,25 @@ public class PreProcessor {
     	String line="";
     	while((line=br.readLine()) != null) {
     		String[] lineSplit = line.split(",");
-    		if(!AdvanceLoral.outgoingEdgeMap.containsKey(lineSplit[0])) {
+    		if(!ParallelAdvanceLoral.outgoingEdgeMap.containsKey(lineSplit[0])) {
     			HashMap<String,Integer> edgeWeight = new HashMap<String,Integer>();
     			edgeWeight.put(lineSplit[1],Integer.parseInt(lineSplit[2]));
-    			AdvanceLoral.outgoingEdgeMap.put(lineSplit[0],edgeWeight);
+    			ParallelAdvanceLoral.outgoingEdgeMap.put(lineSplit[0],edgeWeight);
     		}else {
-    			AdvanceLoral.outgoingEdgeMap.get(lineSplit[0]).put(lineSplit[1],Integer.parseInt(lineSplit[2]));
+    			ParallelAdvanceLoral.outgoingEdgeMap.get(lineSplit[0]).put(lineSplit[1],Integer.parseInt(lineSplit[2]));
     		}
-    		if(!AdvanceLoral.incomingEdgeMap.containsKey(lineSplit[1])) {
+    		if(!ParallelAdvanceLoral.incomingEdgeMap.containsKey(lineSplit[1])) {
     			HashMap<String,Integer> edgeWeight = new HashMap<String,Integer>();
     			edgeWeight.put(lineSplit[0],Integer.parseInt(lineSplit[2]));
-    			AdvanceLoral.incomingEdgeMap.put(lineSplit[1],edgeWeight);
+    			ParallelAdvanceLoral.incomingEdgeMap.put(lineSplit[1],edgeWeight);
     		}else {
-    			AdvanceLoral.incomingEdgeMap.get(lineSplit[1]).put(lineSplit[0],Integer.parseInt(lineSplit[2]));
+    			ParallelAdvanceLoral.incomingEdgeMap.get(lineSplit[1]).put(lineSplit[0],Integer.parseInt(lineSplit[2]));
     		}
     	}
     }
 	
 	public void distanceMatrixToDemandNodes() throws IOException{
-		AdvanceLoral.demandNodeProcessQueue = new PriorityQueue<DnToScToken>();
+		ParallelAdvanceLoral.demandNodeProcessQueue = new PriorityQueue<DnToScToken>();
 		br = new BufferedReader(new FileReader(distanceMatrix));
     	String line="";
     	int i=0;
@@ -74,7 +79,7 @@ public class PreProcessor {
     	while((line=br.readLine()) != null && i<demandNodeIndexMapping.size()) {
     		String[] lineSplit = line.split(",");
     		DemandNode demandNode = demandNodeIndexMapping.get(i);
-    		for(int j=demandNodeIndexMapping.size();j<AdvanceLoral.serviceMap.size()+demandNodeIndexMapping.size();j++) {
+    		for(int j=demandNodeIndexMapping.size();j<ParallelAdvanceLoral.serviceMap.size()+demandNodeIndexMapping.size();j++) {
     			//System.out.println("i=" +i+" j="+j + " val=" + lineSplit[j]);
     			/*
     			 * demandNodeIndexMapping and serviceCenterIndexMapping starts from 0. 
@@ -84,7 +89,7 @@ public class PreProcessor {
     			if(!lineSplit[j].contains("Infinity")) {
     				ServiceCenter sc = serviceCenterIndexMapping.get(j-demandNodeIndexMapping.size());
     				demandNode.addDistanceToSC(Integer.parseInt(lineSplit[j].trim()), sc);
-    				AdvanceLoral.demandNodeProcessQueue.add(new DnToScToken(Integer.parseInt(lineSplit[j].trim()), sc, demandNode));
+    				ParallelAdvanceLoral.demandNodeProcessQueue.add(new DnToScToken(Integer.parseInt(lineSplit[j].trim()), sc, demandNode));
     			}
     		}
     		i++;
