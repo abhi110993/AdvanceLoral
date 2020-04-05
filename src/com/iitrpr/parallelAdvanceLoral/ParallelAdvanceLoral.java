@@ -120,7 +120,6 @@ public class ParallelAdvanceLoral {
 				CascadeThread.finalCascadeList = new CascadeList();
 				
 				
-				int iterationStep = 0;
 				ThreadPoolExecutor tpe = (ThreadPoolExecutor)Executors.newFixedThreadPool(noOfThreads);
 				
 				while(!bestKBoundaryVertices.isEmpty()) {

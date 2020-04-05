@@ -22,7 +22,7 @@ public class ServiceCenter {
 	 * @param scid
 	 * @param maxCap
 	 * */
-	public ServiceCenter(int penalty, String scid, int maxCap) {
+	public ServiceCenter(String scid, int maxCap, int penalty) {
 		this.penalty = penalty;
 		this.scid = scid;
 		this.curCapacity = maxCap;
