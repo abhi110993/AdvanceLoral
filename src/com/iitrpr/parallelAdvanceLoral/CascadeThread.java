@@ -27,12 +27,12 @@ public class CascadeThread implements Runnable{
 	
 	public void run() {
 		// Cascading happens till the time the visited service center length becomes equal to the threshold.
-		System.out.println("Cascading Called for sc=" + serviceCenter.scid + " dn=" + demandNode.dnid);
-		System.out.println("Inside a cascade and here the cascade cost is = "+cascadePathCost);
+		//System.out.println("Cascading Called for sc=" + serviceCenter.scid + " dn=" + demandNode.dnid);
+		//System.out.println("Inside a cascade and here the cascade cost is = "+cascadePathCost);
 		
 		if(cascadePathCost>minCostAcrossAllThreads || ParallelAdvanceLoral.threshold==0) {
 			finalReturnValue =  Integer.MAX_VALUE;
-			System.out.println("cascadePathCost>minCostAcrossAllThreads so returned Cascade Cost : " + cascadePathCost + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
+		//	System.out.println("cascadePathCost>minCostAcrossAllThreads so returned Cascade Cost : " + cascadePathCost + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
 			return;
 		}
 		
@@ -43,21 +43,21 @@ public class CascadeThread implements Runnable{
 		cascadeList.insertAtEnd(new CascadePath(serviceCenter, demandNode, distance));
 		
 		if(!serviceCenter.isfull()) {
-			System.out.println(" !serviceCenter.isfull() Cascade Cost : " + cascadePathCost + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
+		//	System.out.println(" !serviceCenter.isfull() Cascade Cost : " + cascadePathCost + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
 			if(cascadePathCost<minCostAcrossAllThreads) 
 				copyPathToFinalList(cascadePathCost, cascadeList);
 			finalReturnValue =  cascadePathCost;
 			return;
 		} 
 		else if(visitedSC.size() >= ParallelAdvanceLoral.threshold) {
-			System.out.println("visitedSC.size() >= ParallelAdvanceLoral.threshold Cascade Cost : " + (cascadePathCost + serviceCenter.penalty) + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
+		//	System.out.println("visitedSC.size() >= ParallelAdvanceLoral.threshold Cascade Cost : " + (cascadePathCost + serviceCenter.penalty) + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
 			if(cascadePathCost + serviceCenter.penalty<minCostAcrossAllThreads) 
 				copyPathToFinalList(cascadePathCost + serviceCenter.penalty,cascadeList);
 			finalReturnValue = cascadePathCost + serviceCenter.penalty;
 			return;
 		}
 		else {
-			System.out.println("Cascading can be implementated");
+		//	System.out.println("Cascading can be implementated");
 			// Adding the service center to the visited service center so that it is not further processed.
 			visitedSC.add(serviceCenter);
 			//Cascading needs to be implemented here.
@@ -70,7 +70,7 @@ public class CascadeThread implements Runnable{
 			
 			
 			
-			System.out.println("Cascading again... + base ob fun= "+baseObjFn);
+			//System.out.println("Cascading again... + base ob fun= "+baseObjFn);
 			// Priority Queue to find the best pair of demand node and service center
 			PriorityQueue<BoundaryAndItsObjFn> bestKBoundaryVertices = new PriorityQueue<BoundaryAndItsObjFn>();
 			//This hashmap is used to find the best demand node between the service centers
@@ -114,7 +114,7 @@ public class CascadeThread implements Runnable{
 			
 			findBestDNodeForSC.clear();
 			
-			System.out.println("\nSize of bestKBoundaryVertices = " + bestKBoundaryVertices.size());
+			//System.out.println("\nSize of bestKBoundaryVertices = " + bestKBoundaryVertices.size());
 			
 			// Initializing it to the base object function to compare it to all the cascading cost.
 			int minCascadeCost = baseObjFn;
@@ -128,12 +128,12 @@ public class CascadeThread implements Runnable{
 				//System.out.println("Before Adding-distance to allocated SC : " + boundaryVertex.demandNode.distanceToAllocatedSC);
 				//System.out.println("Before Adding-distance btw "+boundaryVertex.demandNode.dnid+" and "+boundaryVertex.serviceCenter.scid+" : " + boundaryVertex.demandNode.getDistanceToSC(boundaryVertex.serviceCenter));
 				int cascadeObjFn = cascadePathCost + boundaryVertex.deltaDistance;
-				System.out.println("Initial Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);
+				//System.out.println("Initial Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);
 				// Cascading Cost Calculation
 				int prevCascadeValue = cascadeObjFn;
 				if(!visitedSC.contains(boundaryVertex.serviceCenter)) {
-					System.out.println("Cascade Object Function is being created : Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);
-					System.out.println("Before cascade implementation : MinCostAcrossThreads = " + minCostAcrossAllThreads);
+				//	System.out.println("Cascade Object Function is being created : Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);
+				//	System.out.println("Before cascade implementation : MinCostAcrossThreads = " + minCostAcrossAllThreads);
 					CascadeThread cascadePathThread = new CascadeThread();
 					cascadePathThread.cascadePathCost = prevCascadeValue;
 					cascadePathThread.cascadeList = cascadeList;
@@ -142,7 +142,7 @@ public class CascadeThread implements Runnable{
 					cascadePathThread.demandNode = boundaryVertex.demandNode;
 					cascadePathThread.run();
 					cascadeObjFn = cascadePathThread.finalReturnValue;
-					System.out.println("After cascade implementation : MinCostAcrossThreads = " + minCostAcrossAllThreads);
+				//	System.out.println("After cascade implementation : MinCostAcrossThreads = " + minCostAcrossAllThreads);
 					//System.out.println("Internal After Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);
 				}else 
 					cascadeObjFn = Integer.MAX_VALUE;
@@ -150,7 +150,7 @@ public class CascadeThread implements Runnable{
 				// Maintaining the minimum cascading list.
 				if((cascadeObjFn<minCascadeCost) && copyPathToFinalList(cascadeObjFn,cascadeList)) {
 					minCascadeCost = cascadeObjFn;
-					System.out.println("Successfull Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);
+				//	System.out.println("Successfull Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);
 				}else {
 					// In my customized singly linked list the removal is done in constant time.
 					cascadeList.removeFromIndex(visitedSC.size()-1);
@@ -163,15 +163,15 @@ public class CascadeThread implements Runnable{
 	}
 	
 	public static synchronized boolean copyPathToFinalList(int cascadeObjFn, CascadeList list) {
-		System.out.println("copyPathToFinalList initiated : cascadeObjFn = " + cascadeObjFn + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
+		//System.out.println("copyPathToFinalList initiated : cascadeObjFn = " + cascadeObjFn + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
 		if(cascadeObjFn<minCostAcrossAllThreads) {
 			minCostAcrossAllThreads = cascadeObjFn;
 			finalCascadeList.size=0;
 			for(int i=0;i<list.size;i++) {
 				finalCascadeList.insertAtEnd(list.list[i]);
-				System.out.println("List added : SC = " + list.list[i].serviceCenter.scid + " DN = " + list.list[i].demandNode.dnid);
+		//		System.out.println("List added : SC = " + list.list[i].serviceCenter.scid + " DN = " + list.list[i].demandNode.dnid);
 			}
-			System.out.println("Successfully copied : copyPathToFinalList done : cascadeObjFn = " + cascadeObjFn + " minCostAcrossAllThread = " + minCostAcrossAllThreads + " Final cascade size = " + finalCascadeList.size);
+		//	System.out.println("Successfully copied : copyPathToFinalList done : cascadeObjFn = " + cascadeObjFn + " minCostAcrossAllThread = " + minCostAcrossAllThreads + " Final cascade size = " + finalCascadeList.size);
 			
 			return true;
 		}

@@ -34,22 +34,18 @@ public class ParallelAdvanceLoral {
 	 * */
 	public void performLoral() throws InterruptedException{
 		int tokenIndex=1;
+		int noOfTokensExecuted = 0;
 		//For loop for demand nodes being unassigned to the service center.
 		while(!demandNodeProcessQueue.isEmpty()) {
 		//while(tokenIndex<checkIndex+1) {
 			// Token to get the service center and demand node with the minimum distance between them.
 			DnToScToken token = demandNodeProcessQueue.poll();
 			
-			if(token.demandNode.isAllocated())
-				System.out.println(tokenIndex+++" Already Allocated Token Processed : Demand Node = " + token.demandNode.dnid + " Service Center = " + token.serviceCenter.scid + " Distance = " + token.distance);
-			else
-				System.out.println(tokenIndex+++" Token Processed : Demand Node = " + token.demandNode.dnid + " Service Center = " + token.serviceCenter.scid + " Distance = " + token.distance);
-			
+			if(!token.demandNode.isAllocated())
+				System.out.println("No of threads = "+noOfThreads+" Demand node in execution = " + noOfTokensExecuted++);
 			if(token==null || token.demandNode.isAllocated())
 				continue;
 
-			if(tokenIndex==checkIndex+1)
-				System.out.println("Check-------------------------------CAP-----"+token.serviceCenter.curCapacity);
 			// If the service center has the capacity then allocate the demand node to the service center.
 			if(!token.serviceCenter.isfull()) {
 				// Since the capacity is >0, so the increase in objective function is only because of the distance. 
@@ -68,14 +64,14 @@ public class ParallelAdvanceLoral {
 					}
 				}
 			}else {
-				if(tokenIndex==checkIndex+1)
-					System.out.println("Cascading is on...");
+				//if(tokenIndex==checkIndex+1)
+				//	System.out.println("Cascading is on...");
 				CascadeThread.finalCascadeList = new CascadeList();
 				//Cascading needs to be implemented here..
 				int baseObjFn = token.distance + token.serviceCenter.penalty;
 
-				if(tokenIndex==checkIndex+1)
-					System.out.println("Base Obj Fn = " + baseObjFn);
+				//if(tokenIndex==checkIndex+1)
+				//	System.out.println("Base Obj Fn = " + baseObjFn);
 				PriorityQueue<BoundaryAndItsObjFn> bestKBoundaryVertices = new PriorityQueue<BoundaryAndItsObjFn>();
 				//This hashmap is used to find the best demand node between the service centers
 				HashMap<ServiceCenter,DemandNode> findBestDNodeForSC = new HashMap<ServiceCenter, DemandNode>();
@@ -93,8 +89,6 @@ public class ParallelAdvanceLoral {
 							DemandNode prevBestDNode = findBestDNodeForSC.get(distanceDetail.getKey());
 							if((prevBestDNode==null) || ((distanceDetail.getValue()-demandNode.distanceToAllocatedSC)<(prevBestDNode.getDistanceToSC(distanceDetail.getKey())-prevBestDNode.distanceToAllocatedSC))) {
 								findBestDNodeForSC.put(distanceDetail.getKey(), demandNode);
-								//if(tokenIndex==checkIndex+1)
-								//	System.out.println("Hash addition : "+ demandNode.dnid+ "-" +distanceDetail.getKey().scid+"="+(distanceDetail.getValue()-demandNode.distanceToAllocatedSC));
 							}
 						}
 					}
@@ -102,18 +96,9 @@ public class ParallelAdvanceLoral {
 				//System.out.println("findBestDNodeForSC Size: " + findBestDNodeForSC.size() + " Entry : "+findBestDNodeForSC);
 				for(Map.Entry<ServiceCenter, DemandNode> entry : findBestDNodeForSC.entrySet()) {
 					bestKBoundaryVertices.add(new BoundaryAndItsObjFn(entry.getValue().getDistanceToSC(entry.getKey())-entry.getValue().distanceToAllocatedSC, entry.getValue(), entry.getKey()));
-					//if(tokenIndex==checkIndex+1)
-					//	System.out.println("Best K boundary vertex addition : "+ entry.getValue().dnid+ "-" +entry.getKey().scid+"="+(entry.getValue().getDistanceToSC(entry.getKey())-entry.getValue().distanceToAllocatedSC));
-				
 				}
 				
 				findBestDNodeForSC.clear();
-				
-				
-				
-				if(tokenIndex==checkIndex+1)
-					System.out.println("\nSize of bestKBoundaryVertices = " + bestKBoundaryVertices.size());
-				
 				
 				// Initializing it to the base object function to campare it to all the cascading cost.
 				CascadeThread.minCostAcrossAllThreads = baseObjFn;
@@ -134,8 +119,8 @@ public class ParallelAdvanceLoral {
 					int prevCascadeValue = cascadeObjFn;
 					// Cascading Cost Calculation
 					if(!visitedSC.contains(boundaryVertex.serviceCenter)) {
-						if(tokenIndex==checkIndex+1)
-							System.out.println("Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid);
+				//		if(tokenIndex==checkIndex+1)
+				//			System.out.println("Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid);
 						CascadeThread cascadePathThread = new CascadeThread();
 						cascadePathThread.cascadePathCost = prevCascadeValue;
 						// List to store the path through which the cascading proceeds.
@@ -153,13 +138,13 @@ public class ParallelAdvanceLoral {
 				tpe.shutdown();
 				tpe.awaitTermination(7200, TimeUnit.SECONDS);
 				while(!tpe.isTerminated()) {
-					System.out.println("Alive");
+				//	System.out.println("Alive");
 					try {Thread.sleep(1000);}catch(Exception e) {}
 				}
 				
 				// Check if the cascading needs to happen or not.
 				if(CascadeThread.minCostAcrossAllThreads<baseObjFn) { 
-					System.out.println("It means that cascading cost is less than the direct allocation of demand to service center.");
+				//	System.out.println("It means that cascading cost is less than the direct allocation of demand to service center.");
 					// It means that cascading cost is less than the direct allocation of demand to service center.
 					token.serviceCenter.addAllocation(token.demandNode,token.distance);
 					updateBoundaryVertices(token.serviceCenter,token.demandNode);
@@ -202,11 +187,11 @@ public class ParallelAdvanceLoral {
 	}
 	
 	public void performCascading(CascadeList cascadeList) {
-		System.out.println("*********** Inside a perform Cascade function *********************");
+		//System.out.println("*********** Inside a perform Cascade function *********************");
 		for(int i=0; i<cascadeList.size; i++) {
 			CascadePath path = cascadeList.list[i];
 			
-			System.out.println("---------Cascading performance between "+path.demandNode.dnid+" & "+path.serviceCenter.scid);
+		//	System.out.println("---------Cascading performance between "+path.demandNode.dnid+" & "+path.serviceCenter.scid);
 			
 			// First remove the demand vertex previous allocation
 			path.demandNode.allocation.removeAllocation(path.demandNode);
