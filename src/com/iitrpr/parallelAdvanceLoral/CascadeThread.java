@@ -1,6 +1,7 @@
 package com.iitrpr.parallelAdvanceLoral;
 
 import java.util.HashMap;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -85,17 +86,6 @@ public class CascadeThread implements Runnable{
 					//System.out.println("Boundary Detail but not yet added : sc="+ distanceDetail.getKey().scid + " dn="+boundaryDemandNode.dnid+" distanceDetail=" + distanceDetail.getValue());
 					//System.out.println("Size of the boundary to sc map = "+ boundaryDemandNode.distanceToSC.size());
 					if((baseObjFn>distanceDetail.getValue()) && (!visitedSC.contains(distanceDetail.getKey())) && (demandNode.allocation!=distanceDetail.getKey())) {
-						
-						
-						
-						
-						
-						// Should I change the baseObjFn to minCostThroughoutThreads
-						
-						
-						
-						
-						
 						DemandNode prevBestDNode = findBestDNodeForSC.get(distanceDetail.getKey());
 						if((prevBestDNode==null) || ((distanceDetail.getValue()-boundaryDemandNode.distanceToAllocatedSC)<(prevBestDNode.getDistanceToSC(distanceDetail.getKey())-prevBestDNode.distanceToAllocatedSC))) {
 							findBestDNodeForSC.put(distanceDetail.getKey(), boundaryDemandNode);
@@ -115,11 +105,9 @@ public class CascadeThread implements Runnable{
 			// Initializing it to the base object function to compare it to all the cascading cost.
 			int minCascadeCost = baseObjFn;
 			int k=0;
-			while(!bestKBoundaryVertices.isEmpty()) {
+			while(!bestKBoundaryVertices.isEmpty() && ((k++)<ParallelAdvanceLoral.bestK)) {
 				// Only best k demand vertices are allowed.
-				if(k++==ParallelAdvanceLoral.bestK)
-					break;
-			
+				
 				BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 				
 				// Since we are breaking the boundary vertex so we are subtracting the distance.
@@ -141,6 +129,7 @@ public class CascadeThread implements Runnable{
 					cascadePathThread.serviceCenter = boundaryVertex.serviceCenter;
 					cascadePathThread.demandNode = boundaryVertex.demandNode;
 					cascadePathThread.run();
+					//cascadePathThread.run();
 					cascadeObjFn = cascadePathThread.finalReturnValue;
 				//	System.out.println("After cascade implementation : MinCostAcrossThreads = " + minCostAcrossAllThreads);
 					//System.out.println("Internal After Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);

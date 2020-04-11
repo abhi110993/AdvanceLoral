@@ -88,7 +88,6 @@ public class PreProcessor {
     			 * */
     			if(!lineSplit[j].contains("Infinity")) {
     				ServiceCenter sc = serviceCenterIndexMapping.get(j);
-    				System.out.println(sc.scid + " " + lineSplit[j].trim()+demandNode);
     				demandNode.addDistanceToSC(Integer.parseInt(lineSplit[j].trim()), sc);
     				Loral.demandNodeProcessQueue.add(new DnToScToken(Integer.parseInt(lineSplit[j].trim()), sc, demandNode));
     			}

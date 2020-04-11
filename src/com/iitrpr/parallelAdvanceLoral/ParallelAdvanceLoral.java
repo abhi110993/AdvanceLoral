@@ -141,7 +141,6 @@ public class ParallelAdvanceLoral {
 				//	System.out.println("Alive");
 					try {Thread.sleep(1000);}catch(Exception e) {}
 				}
-				
 				// Check if the cascading needs to happen or not.
 				if(CascadeThread.minCostAcrossAllThreads<baseObjFn) { 
 				//	System.out.println("It means that cascading cost is less than the direct allocation of demand to service center.");

@@ -27,7 +27,7 @@ public class ParallelSimulator {
 		//Loral.bestK = Loral.demandMap.size();
 		ParallelAdvanceLoral.bestK=Integer.MAX_VALUE;
 		
-		ParallelAdvanceLoral.noOfThreads = Runtime.getRuntime().availableProcessors();
+		ParallelAdvanceLoral.noOfThreads = Runtime.getRuntime().availableProcessors()-3;
 		System.out.println("Total no of threads available are = " + ParallelAdvanceLoral.noOfThreads);
 		
 		//Time calculation after preprocessing

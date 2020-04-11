@@ -14,7 +14,6 @@ public class ServiceCenter {
 	 * (c) an outgoing edge to an unprocessed demand vertex
 	 * 
 	 * */
-	//@askSir : Best of k boudary vertices-- Implement it
 	public HashSet<DemandNode> boundaryVertices;
 	
 	/**
