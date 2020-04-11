@@ -1,4 +1,4 @@
-package com.iitrpr.parallelAdvanceLoral;
+package com.iitrpr.parallelCascade;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +20,8 @@ public class CascadeThread implements Runnable{
 	int finalReturnValue;
 	static int minCostAcrossAllThreads;
 	static CascadeList finalCascadeList;
+	static PriorityQueue<CostCascades> allCascades;
+	
 	
 	public CascadeThread() {
 		super();
@@ -30,7 +32,7 @@ public class CascadeThread implements Runnable{
 		//System.out.println("Cascading Called for sc=" + serviceCenter.scid + " dn=" + demandNode.dnid);
 		//System.out.println("Inside a cascade and here the cascade cost is = "+cascadePathCost);
 		
-		if(cascadePathCost>minCostAcrossAllThreads || ParallelAdvanceLoral.threshold==0) {
+		if(ParallelCascadeLoral.threshold==0) {
 			finalReturnValue =  Integer.MAX_VALUE;
 		//	System.out.println("cascadePathCost>minCostAcrossAllThreads so returned Cascade Cost : " + cascadePathCost + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
 			return;
@@ -46,10 +48,11 @@ public class CascadeThread implements Runnable{
 		//	System.out.println(" !serviceCenter.isfull() Cascade Cost : " + cascadePathCost + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
 			if(cascadePathCost<minCostAcrossAllThreads) 
 				copyPathToFinalList(cascadePathCost, cascadeList);
+			
 			finalReturnValue =  cascadePathCost;
 			return;
 		} 
-		else if(visitedSC.size() >= ParallelAdvanceLoral.threshold) {
+		else if(visitedSC.size() >= ParallelCascadeLoral.threshold) {
 		//	System.out.println("visitedSC.size() >= ParallelAdvanceLoral.threshold Cascade Cost : " + (cascadePathCost + serviceCenter.penalty) + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
 			if(cascadePathCost + serviceCenter.penalty<minCostAcrossAllThreads) 
 				copyPathToFinalList(cascadePathCost + serviceCenter.penalty,cascadeList);
@@ -76,8 +79,12 @@ public class CascadeThread implements Runnable{
 			//This hashmap is used to find the best demand node between the service centers
 			HashMap<ServiceCenter,DemandNode> findBestDNodeForSC = new HashMap<ServiceCenter, DemandNode>();
 			// This loop is to iterate over all the boundary vertices
+			int k=0;
 			for(DemandNode boundaryDemandNode : serviceCenter.boundaryVertices) {
 				//System.out.println("** Boundary vertex processing "+ boundaryDemandNode.dnid +" **");
+				// Only best k demand vertices are allowed.
+				if(k++==ParallelCascadeLoral.bestK)
+					break;
 				
 				// This loop is to add the demand node and service center distance to the Tree Set.
 				for(Map.Entry<ServiceCenter, Integer> distanceDetail : boundaryDemandNode.distanceToSC.entrySet()) {
@@ -85,17 +92,6 @@ public class CascadeThread implements Runnable{
 					//System.out.println("Boundary Detail but not yet added : sc="+ distanceDetail.getKey().scid + " dn="+boundaryDemandNode.dnid+" distanceDetail=" + distanceDetail.getValue());
 					//System.out.println("Size of the boundary to sc map = "+ boundaryDemandNode.distanceToSC.size());
 					if((baseObjFn>distanceDetail.getValue()) && (!visitedSC.contains(distanceDetail.getKey())) && (demandNode.allocation!=distanceDetail.getKey())) {
-						
-						
-						
-						
-						
-						// Should I change the baseObjFn to minCostThroughoutThreads
-						
-						
-						
-						
-						
 						DemandNode prevBestDNode = findBestDNodeForSC.get(distanceDetail.getKey());
 						if((prevBestDNode==null) || ((distanceDetail.getValue()-boundaryDemandNode.distanceToAllocatedSC)<(prevBestDNode.getDistanceToSC(distanceDetail.getKey())-prevBestDNode.distanceToAllocatedSC))) {
 							findBestDNodeForSC.put(distanceDetail.getKey(), boundaryDemandNode);
@@ -114,12 +110,8 @@ public class CascadeThread implements Runnable{
 			
 			// Initializing it to the base object function to compare it to all the cascading cost.
 			int minCascadeCost = baseObjFn;
-			int k=0;
-			while(!bestKBoundaryVertices.isEmpty()) {
-				// Only best k demand vertices are allowed.
-				if(k++==ParallelAdvanceLoral.bestK)
-					break;
 			
+			while(!bestKBoundaryVertices.isEmpty()) {
 				BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 				
 				// Since we are breaking the boundary vertex so we are subtracting the distance.
@@ -160,6 +152,10 @@ public class CascadeThread implements Runnable{
 			finalReturnValue =  minCascadeCost;
 			return;
 		}
+	}
+	
+	public static synchronized void copyPathToAllCascades(int cascadeObjFn, CascadeList list) {
+		allCascades.add(new CostCascades(cascadeObjFn-ParallelCascadeLoral.token.distance, list));
 	}
 	
 	public static synchronized boolean copyPathToFinalList(int cascadeObjFn, CascadeList list) {

@@ -132,7 +132,7 @@ public class ProcessData {
 	
 	static void constructNxNmatrix() throws IOException{
 		nXnMatrix = new int[noOfNodes][noOfNodes];
-		maxValue += 1000;//Empirical Value taken for denoting infinite 
+		maxValue = 50000;//Empirical Value taken for denoting infinite 
 		for(int i = 0;i<noOfNodes;i++) {
 			for(int j = 0;j<noOfNodes;j++) 
 				nXnMatrix[i][j] = maxValue;
@@ -143,7 +143,6 @@ public class ProcessData {
 		while(((line = br.readLine())!=null) && (!line.equals(""))) {
 			String[] st = line.trim().split(",");
 			int val = Integer.parseInt(st[2]);
-			maxValue = Integer.max(maxValue,val);
 			nXnMatrix[nodesIndexMap.get(st[0])][nodesIndexMap.get(st[1])] = val;
 		}
 		br.close();

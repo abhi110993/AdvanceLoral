@@ -33,7 +33,7 @@ public class ParallelAdvanceLoral {
 	 *  This method performs the Loral Algorithm.
 	 * */
 	public void performLoral() throws InterruptedException{
-		int tokenIndex=1;
+		//int tokenIndex=1;
 		int noOfTokensExecuted = 0;
 		//For loop for demand nodes being unassigned to the service center.
 		while(!demandNodeProcessQueue.isEmpty()) {
@@ -76,11 +76,7 @@ public class ParallelAdvanceLoral {
 				//This hashmap is used to find the best demand node between the service centers
 				HashMap<ServiceCenter,DemandNode> findBestDNodeForSC = new HashMap<ServiceCenter, DemandNode>();
 				// This loop is to iterate over all the boundary vertices
-				int k=0;
 				for(DemandNode demandNode : token.serviceCenter.boundaryVertices) {
-					// Only best k demand vertices are allowed.
-					if(k++==bestK)
-						break;
 					// This loop is to add the demand node and service center distance to the Tree Set.
 					for(Map.Entry<ServiceCenter, Integer> distanceDetail : demandNode.distanceToSC.entrySet()) {
 						
@@ -106,8 +102,12 @@ public class ParallelAdvanceLoral {
 				
 				
 				ThreadPoolExecutor tpe = (ThreadPoolExecutor)Executors.newFixedThreadPool(noOfThreads);
-				
+				int k=0;
 				while(!bestKBoundaryVertices.isEmpty()) {
+					// Only best k demand vertices are allowed.
+					if(k++==bestK)
+						break;
+					
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// This hash set to take care that the service center is not repeated.
 					HashSet<ServiceCenter> visitedSC = new HashSet<ServiceCenter>();
