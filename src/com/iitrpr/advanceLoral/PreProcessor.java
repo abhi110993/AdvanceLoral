@@ -80,9 +80,8 @@ public class PreProcessor {
     			 * That's why j-size of total number of demand nodes.
     			 * For more understanding check loadServiceCenter function.
     			 * */
-    			if(!lineSplit[j].contains("Infinity")) {
+    			if(!lineSplit[j].contains("Infinite")) {
     				ServiceCenter sc = serviceCenterIndexMapping.get(j);
-    				System.out.println(sc.scid + " " + lineSplit[j].trim()+demandNode);
     				demandNode.addDistanceToSC(Integer.parseInt(lineSplit[j].trim()), sc);
     				AdvanceLoral.demandNodeProcessQueue.add(new DnToScToken(Integer.parseInt(lineSplit[j].trim()), sc, demandNode));
     			}

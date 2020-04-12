@@ -103,11 +103,7 @@ public class ParallelAdvanceLoral {
 				
 				ThreadPoolExecutor tpe = (ThreadPoolExecutor)Executors.newFixedThreadPool(noOfThreads);
 				int k=0;
-				while(!bestKBoundaryVertices.isEmpty()) {
-					// Only best k demand vertices are allowed.
-					if(k++==bestK)
-						break;
-					
+				while(!bestKBoundaryVertices.isEmpty() && (k++<bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// This hash set to take care that the service center is not repeated.
 					HashSet<ServiceCenter> visitedSC = new HashSet<ServiceCenter>();
@@ -134,12 +130,10 @@ public class ParallelAdvanceLoral {
 				}
 				
 				//Wait for all the threads to complete their execution
-				//tpe.awaitTermination(5, TimeUnit.SECONDS);
 				tpe.shutdown();
 				tpe.awaitTermination(7200, TimeUnit.SECONDS);
 				while(!tpe.isTerminated()) {
-				//	System.out.println("Alive");
-					try {Thread.sleep(1000);}catch(Exception e) {}
+					try {Thread.sleep(200);}catch(Exception e) {}
 				}
 				// Check if the cascading needs to happen or not.
 				if(CascadeThread.minCostAcrossAllThreads<baseObjFn) { 
@@ -147,7 +141,6 @@ public class ParallelAdvanceLoral {
 					// It means that cascading cost is less than the direct allocation of demand to service center.
 					token.serviceCenter.addAllocation(token.demandNode,token.distance);
 					updateBoundaryVertices(token.serviceCenter,token.demandNode);
-					totalPenalizeCost+=CascadeThread.minCostAcrossAllThreads;
 					// Now we are checking if the incoming demand nodes to the token demand node has become boundary vertices or not.
 					if(incomingEdgeMap.get(token.demandNode.dnid)!=null) {
 						for(Map.Entry<String, Integer> entry : incomingEdgeMap.get(token.demandNode.dnid).entrySet()) {

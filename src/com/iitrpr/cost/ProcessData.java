@@ -23,8 +23,8 @@ public class ProcessData {
 		System.out.println("All pair shortest path is applied");
 		//printNxNmatrix();
 		
-		//int[] ratioDemandToService = {700,600,500,400,300};
-		int[] ratioDemandToService = {2};
+		int[] ratioDemandToService = {700,600,500,400,300};
+		//int[] ratioDemandToService = {2};
 		for(int ratio : ratioDemandToService) {
 	       	//This would take the ratio and all other details to prepare the service nodes
 			prepareServiceNodes(ratio);

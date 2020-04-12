@@ -2,7 +2,7 @@ package com.iitrpr.advanceLoral;
 import java.io.*;
 import java.util.HashMap;
 
-public class Simulator {
+public class AdvanceSimulator {
 
 	public static void main(String[] args) throws IOException{
 		PreProcessor preprocess = new PreProcessor();
