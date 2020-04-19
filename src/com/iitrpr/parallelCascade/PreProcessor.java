@@ -1,10 +1,8 @@
 package com.iitrpr.parallelCascade;
 import java.util.*;
-
 import com.iitrpr.advanceLoral.DemandNode;
 import com.iitrpr.advanceLoral.DnToScToken;
 import com.iitrpr.advanceLoral.ServiceCenter;
-
 import java.io.*;
 
 public class PreProcessor {
@@ -38,12 +36,11 @@ public class PreProcessor {
     	while((line=br.readLine()) != null) {
     		String[] lineSplit = line.split(",");
     		if(lineSplit[0]!=null && !lineSplit[0].equals("") && !ParallelCascadeLoral.serviceMap.containsKey(lineSplit[0])) {
-    			//System.out.println("Load Demand Node line = " + line);
-        		DemandNode dn = new DemandNode(lineSplit[0],null);
-        		ParallelCascadeLoral.demandMap.put(lineSplit[0], dn);
+    			DemandNode dn = new DemandNode(lineSplit[0],null);
+    			ParallelCascadeLoral.demandMap.put(lineSplit[0], dn);
     			demandNodeIndexMapping.put(i,dn);
-    			i++;
     		}
+    		i++;
     	}
     	br.close();
     }
@@ -74,30 +71,42 @@ public class PreProcessor {
 	
 	public void distanceMatrixToDemandNodes() throws IOException{
 		ParallelCascadeLoral.demandNodeProcessQueue = new PriorityQueue<DnToScToken>();
+		HashMap<DemandNode,DistToSCToken> map = new HashMap<DemandNode, DistToSCToken>();
 		br = new BufferedReader(new FileReader(distanceMatrix));
     	String line="";
     	int i=0;
     	System.out.println("DemandNodeIndexMapSize : " + demandNodeIndexMapping.size());
     	System.out.println("ServiceNodeIndexMapSize : " + serviceCenterIndexMapping.size());
-    	while((line=br.readLine()) != null && !line.equals("") &&(i<demandNodeIndexMapping.size())) {
+    	while((line=br.readLine()) != null && !line.equals("")) {
     		String[] lineSplit = line.split(",");
     		DemandNode demandNode = demandNodeIndexMapping.get(i);
+    		if(demandNode==null) {i++;continue;}
     		for(int j=0;j<ParallelCascadeLoral.serviceMap.size();j++) {
-    			//System.out.println("i=" +i+" j="+j + " val=" + lineSplit[j]);
-    			/*
-    			 * demandNodeIndexMapping and serviceCenterIndexMapping starts from 0. 
-    			 * That's why j-size of total number of demand nodes.
-    			 * For more understanding check loadServiceCenter function.
-    			 * */
+    			int cost = Integer.parseInt(lineSplit[j].trim());
     			if(!lineSplit[j].contains("Infinite")) {
     				ServiceCenter sc = serviceCenterIndexMapping.get(j);
-    				//System.out.println(sc.scid + " " + lineSplit[j].trim()+" "+demandNode + " i=" + i);
-    				demandNode.addDistanceToSC(Integer.parseInt(lineSplit[j].trim()), sc);
-    				ParallelCascadeLoral.demandNodeProcessQueue.add(new DnToScToken(Integer.parseInt(lineSplit[j].trim()), sc, demandNode));
+    				demandNode.addDistanceToSC(cost, sc);
+    				if(map.get(demandNode)==null) {
+    					map.put(demandNode,new DistToSCToken(sc,cost));
+    				}else if(map.get(demandNode).distance>cost) {
+    					map.put(demandNode,new DistToSCToken(sc,cost));
+    				}
+    			//	ParallelAdvanceLoral.demandNodeProcessQueue.add(new DnToScToken(1, sc, demandNode));
     			}
     		}
     		i++;
     	}
     	br.close();
+    	for(Map.Entry<DemandNode, DistToSCToken> entry : map.entrySet())
+    		ParallelCascadeLoral.demandNodeProcessQueue.add(new DnToScToken(entry.getValue().distance, entry.getValue().sc, entry.getKey()));
+	}
+}
+
+class DistToSCToken{
+	int distance;
+	ServiceCenter sc;
+	public DistToSCToken(ServiceCenter s,int d) {
+		sc = s;
+		distance = d;
 	}
 }

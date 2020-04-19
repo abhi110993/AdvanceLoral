@@ -12,9 +12,10 @@ public class AdvanceLoral {
 	
 	int objectiveFunction = 0,totalPenalizeCost = 0;
 	// This variable is only for testing.
-	int checkIndex = 16;
+	int checkIndex = 1311;
 	// To store the cascade list which gives out the minimum cascade cost.
 	CascadeList finalCascadeList;
+	boolean allowPrint = false;
 	/*
 	 *  This method performs the Loral Algorithm.
 	 * */
@@ -23,16 +24,19 @@ public class AdvanceLoral {
 		//For loop for demand nodes being unassigned to the service center.
 		int noOfTokensExecuted = 0;
 		
-		while(!demandNodeProcessQueue.isEmpty()) {
-		//while(tokenIndex<checkIndex+1) {
+		//while(!demandNodeProcessQueue.isEmpty()) {
+		while(tokenIndex++<checkIndex+1) {
 			// Token to get the service center and demand node with the minimum distance between them.
 			DnToScToken token = demandNodeProcessQueue.poll();
-			if(!token.demandNode.isAllocated())
-				System.out.println("Demand node in execution = " + noOfTokensExecuted++);
 			
 			if(token==null || token.demandNode.isAllocated())
 				continue;
-
+			if(tokenIndex==checkIndex+1) {
+				System.out.println("Processing : DN = "+token.demandNode.dnid + " sc = " + token.serviceCenter.scid + " Dis=" + token.distance);
+				allowPrint = true;
+			}
+			System.out.println("Demand node in execution = " + noOfTokensExecuted++);
+			
 		// If the service center has the capacity then allocate the demand node to the service center.
 			if(!token.serviceCenter.isfull()) {
 				// Since the capacity is >0, so the increase in objective function is only because of the distance. 
@@ -53,7 +57,6 @@ public class AdvanceLoral {
 			}else {
 				//if(tokenIndex==checkIndex+1)
 				//	System.out.println("Cascading is on...");
-				finalCascadeList = new CascadeList();
 				//Cascading needs to be implemented here..
 				int baseObjFn = token.distance + token.serviceCenter.penalty;
 
@@ -85,9 +88,9 @@ public class AdvanceLoral {
 				
 				// Initializing it to the base object function to campare it to all the cascading cost.
 				minCascadeCost = baseObjFn;
-				
+				finalCascadeList = new CascadeList();
 				int k=0;
-				while((!bestKBoundaryVertices.isEmpty()) && (k++ < AdvanceLoral.bestK)) {
+				while((!bestKBoundaryVertices.isEmpty()) && (k++ < bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// This hash set to take care that the service center is not repeated.
 					HashSet<ServiceCenter> visitedSC = new HashSet<ServiceCenter>();
@@ -98,13 +101,8 @@ public class AdvanceLoral {
 				
 					// List to store the path through which the cascading proceeds.
 					CascadeList currentCascadeDetail = new CascadeList();
-					int prevCascadeValue = cascadeObjFn;
 					// Cascading Cost Calculation
-					if(!visitedSC.contains(boundaryVertex.serviceCenter)) {
-						cascadeObjFn = cascadePath(prevCascadeValue, currentCascadeDetail, visitedSC, boundaryVertex.serviceCenter, boundaryVertex.demandNode);
-					}
-					else 
-						cascadeObjFn = Integer.MAX_VALUE;
+					cascadeObjFn = cascadePath(cascadeObjFn, currentCascadeDetail, visitedSC, boundaryVertex.serviceCenter, boundaryVertex.demandNode);
 					// Maintaining the minimum cascading list.
 					if(cascadeObjFn<minCascadeCost) {
 						minCascadeCost = cascadeObjFn;
@@ -195,23 +193,10 @@ public class AdvanceLoral {
 			//This hashmap is used to find the best demand node between the service centers
 			HashMap<ServiceCenter,DemandNode> findBestDNodeForSC = new HashMap<ServiceCenter, DemandNode>();
 			// This loop is to iterate over all the boundary vertices
-			int k=0;
 			for(DemandNode boundaryDemandNode : serviceCenter.boundaryVertices) {
 				//System.out.println("** Boundary vertex processing "+ boundaryDemandNode.dnid +" **");
-				// Only best k demand vertices are allowed.
-				if(k++==bestK)
-					break;
-				
 				// This loop is to add the demand node and service center distance to the Tree Set.
 				for(Map.Entry<ServiceCenter, Integer> distanceDetail : boundaryDemandNode.distanceToSC.entrySet()) {
-					/*
-					 * Verify whether it is correct or not;
-					if(distanceDetail.serviceCenter.isfull())
-						innerObjFn += distanceDetail.serviceCenter.penalty;
-					*/
-					// There's no point adding something whose distance is greater than the base objective function value
-					//System.out.println("Boundary Detail but not yet added : sc="+ distanceDetail.getKey().scid + " dn="+boundaryDemandNode.dnid+" distanceDetail=" + distanceDetail.getValue());
-					//System.out.println("Size of the boundary to sc map = "+ boundaryDemandNode.distanceToSC.size());
 					if((baseObjFn>distanceDetail.getValue()) && (!visitedSC.contains(distanceDetail.getKey())) && (demandNode.allocation!=distanceDetail.getKey())) {
 						
 						DemandNode prevBestDNode = findBestDNodeForSC.get(distanceDetail.getKey());
@@ -230,20 +215,17 @@ public class AdvanceLoral {
 			
 			// Initializing it to the base object function to compare it to all the cascading cost.
 			int minCascadeCost = baseObjFn;
-			
-			while((!bestKBoundaryVertices.isEmpty())) {
+			int k=0;
+			while((!bestKBoundaryVertices.isEmpty()) && (k++<bestK)) {
 				BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
-				int cascadeObjFn = cascadePathCost + boundaryVertex.deltaDistance;
 				// Cascading Cost Calculation
-				int prevCascadeValue = cascadeObjFn;
-				if(!visitedSC.contains(boundaryVertex.serviceCenter)) {
-					cascadeObjFn = cascadePath(prevCascadeValue, cascadeList, visitedSC, boundaryVertex.serviceCenter, boundaryVertex.demandNode);
-				}else 
-					cascadeObjFn = Integer.MAX_VALUE;
-				// Maintaining the minimum cascading list.
+				int cascadeObjFn = cascadePathCost + boundaryVertex.deltaDistance;
+				cascadeObjFn = cascadePath(cascadeObjFn, cascadeList, visitedSC, boundaryVertex.serviceCenter, boundaryVertex.demandNode);
+				
 				if(cascadeObjFn<minCascadeCost) {
 					minCascadeCost = cascadeObjFn;
 					copyPathToFinalList(cascadeList);
+					cascadeList.removeFromIndex(visitedSC.size()-1);
 				}else {
 					// In my customized singly linked list the removal is done in constant time.
 					cascadeList.removeFromIndex(visitedSC.size()-1);
@@ -257,8 +239,8 @@ public class AdvanceLoral {
 	public void performCascading(CascadeList cascadeList) {
 		for(int i=0; i<cascadeList.size; i++) {
 			CascadePath path = cascadeList.list[i];
-			
-			//System.out.println("---------Cascading performance between "+path.demandNode.dnid+" & "+path.serviceCenter.scid);
+			if(allowPrint)
+				System.out.println("---------Cascading performance between DN = "+path.demandNode.dnid+" & SC = "+path.serviceCenter.scid + " Dis=" + path.distance);
 			
 			// First remove the demand vertex previous allocation
 			path.demandNode.allocation.removeAllocation(path.demandNode);

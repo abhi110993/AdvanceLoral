@@ -45,15 +45,13 @@ public class CascadeThread implements Runnable{
 		
 		if(!serviceCenter.isfull()) {
 		//	System.out.println(" !serviceCenter.isfull() Cascade Cost : " + cascadePathCost + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
-			if(cascadePathCost<minCostAcrossAllThreads) 
-				copyPathToFinalList(cascadePathCost, cascadeList);
+			copyPathToFinalList(cascadePathCost, cascadeList);
 			finalReturnValue =  cascadePathCost;
 			return;
 		} 
 		else if(visitedSC.size() >= ParallelAdvanceLoral.threshold) {
 		//	System.out.println("visitedSC.size() >= ParallelAdvanceLoral.threshold Cascade Cost : " + (cascadePathCost + serviceCenter.penalty) + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
-			if(cascadePathCost + serviceCenter.penalty<minCostAcrossAllThreads) 
-				copyPathToFinalList(cascadePathCost + serviceCenter.penalty,cascadeList);
+			copyPathToFinalList(cascadePathCost + serviceCenter.penalty,cascadeList);
 			finalReturnValue = cascadePathCost + serviceCenter.penalty;
 			return;
 		}
@@ -64,13 +62,6 @@ public class CascadeThread implements Runnable{
 			//Cascading needs to be implemented here.
 			// Base condition to check if we go ahead with the penalty.
 			int baseObjFn =  cascadePathCost + serviceCenter.penalty;
-			
-			
-			
-			//Should I change the minCostThroughout threads or not
-			
-			
-			
 			//System.out.println("Cascading again... + base ob fun= "+baseObjFn);
 			// Priority Queue to find the best pair of demand node and service center
 			PriorityQueue<BoundaryAndItsObjFn> bestKBoundaryVertices = new PriorityQueue<BoundaryAndItsObjFn>();
@@ -103,44 +94,29 @@ public class CascadeThread implements Runnable{
 			//System.out.println("\nSize of bestKBoundaryVertices = " + bestKBoundaryVertices.size());
 			
 			// Initializing it to the base object function to compare it to all the cascading cost.
-			int minCascadeCost = baseObjFn;
 			int k=0;
+			int minCascadeCost = baseObjFn;
 			while(!bestKBoundaryVertices.isEmpty() && ((k++)<ParallelAdvanceLoral.bestK)) {
-				// Only best k demand vertices are allowed.
-				
 				BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
-				
-				// Since we are breaking the boundary vertex so we are subtracting the distance.
-				//System.out.println("Before Adding-cascade cost : " + cascadePathCost);
-				//System.out.println("Before Adding-delta distance : " + boundaryVertex.deltaDistance);
-				//System.out.println("Before Adding-distance to allocated SC : " + boundaryVertex.demandNode.distanceToAllocatedSC);
-				//System.out.println("Before Adding-distance btw "+boundaryVertex.demandNode.dnid+" and "+boundaryVertex.serviceCenter.scid+" : " + boundaryVertex.demandNode.getDistanceToSC(boundaryVertex.serviceCenter));
 				int cascadeObjFn = cascadePathCost + boundaryVertex.deltaDistance;
 				//System.out.println("Initial Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);
 				// Cascading Cost Calculation
-				int prevCascadeValue = cascadeObjFn;
-				if(!visitedSC.contains(boundaryVertex.serviceCenter)) {
-				//	System.out.println("Cascade Object Function is being created : Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);
-				//	System.out.println("Before cascade implementation : MinCostAcrossThreads = " + minCostAcrossAllThreads);
-					CascadeThread cascadePathThread = new CascadeThread();
-					cascadePathThread.cascadePathCost = prevCascadeValue;
-					cascadePathThread.cascadeList = cascadeList;
-					cascadePathThread.visitedSC = visitedSC;
-					cascadePathThread.serviceCenter = boundaryVertex.serviceCenter;
-					cascadePathThread.demandNode = boundaryVertex.demandNode;
-					cascadePathThread.run();
-					//cascadePathThread.run();
-					cascadeObjFn = cascadePathThread.finalReturnValue;
-				//	System.out.println("After cascade implementation : MinCostAcrossThreads = " + minCostAcrossAllThreads);
-					//System.out.println("Internal After Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);
-				}else 
-					cascadeObjFn = Integer.MAX_VALUE;
-
-				// Maintaining the minimum cascading list.
-				if((cascadeObjFn<minCascadeCost) && copyPathToFinalList(cascadeObjFn,cascadeList)) {
+				CascadeThread cascadePathThread = new CascadeThread();
+				cascadePathThread.cascadePathCost = cascadeObjFn;
+				cascadePathThread.cascadeList = cascadeList;
+				cascadePathThread.visitedSC = visitedSC;
+				cascadePathThread.serviceCenter = boundaryVertex.serviceCenter;
+				cascadePathThread.demandNode = boundaryVertex.demandNode;
+				cascadePathThread.finalReturnValue = Integer.MAX_VALUE;
+				cascadePathThread.run();
+				cascadeObjFn = cascadePathThread.finalReturnValue;
+				
+				if(cascadeObjFn<minCascadeCost) {
 					minCascadeCost = cascadeObjFn;
-				//	System.out.println("Successfull Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid + " Allocation= "+boundaryVertex.demandNode.allocation.scid);
-				}else {
+					copyPathToFinalList(cascadeObjFn,cascadeList);
+					cascadeList.removeFromIndex(visitedSC.size()-1);
+				}
+				else {
 					// In my customized singly linked list the removal is done in constant time.
 					cascadeList.removeFromIndex(visitedSC.size()-1);
 				}
@@ -151,7 +127,7 @@ public class CascadeThread implements Runnable{
 		}
 	}
 	
-	public static synchronized boolean copyPathToFinalList(int cascadeObjFn, CascadeList list) {
+	public synchronized boolean copyPathToFinalList(int cascadeObjFn, CascadeList list) {
 		//System.out.println("copyPathToFinalList initiated : cascadeObjFn = " + cascadeObjFn + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
 		if(cascadeObjFn<minCostAcrossAllThreads) {
 			minCostAcrossAllThreads = cascadeObjFn;

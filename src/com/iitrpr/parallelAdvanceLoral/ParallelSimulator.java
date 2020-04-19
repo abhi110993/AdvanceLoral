@@ -24,10 +24,11 @@ public class ParallelSimulator {
 		//Loral.threshold = 0;
 		
 		// BestK is for limiting the boundary nodes to service node pairs for cascading. 
-		//Loral.bestK = Loral.demandMap.size();
-		ParallelAdvanceLoral.bestK=Integer.MAX_VALUE;
+		//ParallelAdvanceLoral.bestK = Loral.demandMap.size();
+		ParallelAdvanceLoral.bestK=ParallelAdvanceLoral.serviceMap.size();
 		
-		ParallelAdvanceLoral.noOfThreads = Runtime.getRuntime().availableProcessors()-3;
+		//ParallelAdvanceLoral.noOfThreads = Runtime.getRuntime().availableProcessors()-3;
+		ParallelAdvanceLoral.noOfThreads = 1;
 		System.out.println("Total no of threads available are = " + ParallelAdvanceLoral.noOfThreads);
 		
 		//Time calculation after preprocessing
@@ -38,7 +39,7 @@ public class ParallelSimulator {
 		
 		double endTime = System.nanoTime();
 		// This will print all the allocation which the service center has attained.
-		loral.printAllInformation();
+		//loral.printAllInformation();
 		System.out.println("Total Execution time in ns = " + (endTime - startTime));
 		System.out.println("Total Objective Function = " + loral.objectiveFunction);
 		System.out.println("Total Cost because of cascading = " + loral.totalPenalizeCost);

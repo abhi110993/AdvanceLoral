@@ -23,29 +23,32 @@ public class ParallelAdvanceLoral {
 	static PriorityQueue<DnToScToken> demandNodeProcessQueue;
 	static int threshold,bestK;
 	static int noOfThreads;
-	
+	boolean allowPrint = false;
 	int objectiveFunction = 0,totalPenalizeCost = 0;
 	// This variable is only for testing.
-	int checkIndex = 16;
+	int checkIndex = 1311;
 	// To store the cascade list which gives out the minimum cascade cost.
 	
 	/*
 	 *  This method performs the Loral Algorithm.
 	 * */
 	public void performLoral() throws InterruptedException{
-		//int tokenIndex=1;
+		int tokenIndex=1;
 		int noOfTokensExecuted = 0;
 		//For loop for demand nodes being unassigned to the service center.
-		while(!demandNodeProcessQueue.isEmpty()) {
-		//while(tokenIndex<checkIndex+1) {
+		//while(!demandNodeProcessQueue.isEmpty()) {
+		while(tokenIndex++<checkIndex+1) {
 			// Token to get the service center and demand node with the minimum distance between them.
 			DnToScToken token = demandNodeProcessQueue.poll();
 			
-			if(!token.demandNode.isAllocated())
-				System.out.println("No of threads = "+noOfThreads+" Demand node in execution = " + noOfTokensExecuted++);
 			if(token==null || token.demandNode.isAllocated())
 				continue;
-
+			if(tokenIndex==checkIndex+1) {
+				System.out.println("Processing : DN = "+token.demandNode.dnid + " sc = " + token.serviceCenter.scid + " Dis=" + token.distance);
+				allowPrint = true;
+			}
+			System.out.println("Demand node in execution = " + noOfTokensExecuted++);
+			
 			// If the service center has the capacity then allocate the demand node to the service center.
 			if(!token.serviceCenter.isfull()) {
 				// Since the capacity is >0, so the increase in objective function is only because of the distance. 
@@ -66,7 +69,6 @@ public class ParallelAdvanceLoral {
 			}else {
 				//if(tokenIndex==checkIndex+1)
 				//	System.out.println("Cascading is on...");
-				CascadeThread.finalCascadeList = new CascadeList();
 				//Cascading needs to be implemented here..
 				int baseObjFn = token.distance + token.serviceCenter.penalty;
 
@@ -100,10 +102,9 @@ public class ParallelAdvanceLoral {
 				CascadeThread.minCostAcrossAllThreads = baseObjFn;
 				CascadeThread.finalCascadeList = new CascadeList();
 				
-				
 				ThreadPoolExecutor tpe = (ThreadPoolExecutor)Executors.newFixedThreadPool(noOfThreads);
 				int k=0;
-				while(!bestKBoundaryVertices.isEmpty() && (k++<bestK)) {
+				while(!bestKBoundaryVertices.isEmpty() && (k++ < bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// This hash set to take care that the service center is not repeated.
 					HashSet<ServiceCenter> visitedSC = new HashSet<ServiceCenter>();
@@ -111,35 +112,39 @@ public class ParallelAdvanceLoral {
 					
 					// Since we are breaking the boundary vertex so we are subtracting the distance.
 					int cascadeObjFn = token.distance + boundaryVertex.deltaDistance;
+					// List to store the path through which the cascading proceeds.
+					CascadeList currentCascadeDetail = new CascadeList();
 					
-					int prevCascadeValue = cascadeObjFn;
+					CascadeThread cascadePathThread = new CascadeThread();
+					
+					cascadePathThread.cascadeList = currentCascadeDetail;
+					
 					// Cascading Cost Calculation
-					if(!visitedSC.contains(boundaryVertex.serviceCenter)) {
-				//		if(tokenIndex==checkIndex+1)
-				//			System.out.println("Cascade Ob fn = " + cascadeObjFn + " B.V.=" + boundaryVertex.demandNode.dnid + " S.C.=" + boundaryVertex.serviceCenter.scid);
-						CascadeThread cascadePathThread = new CascadeThread();
-						cascadePathThread.cascadePathCost = prevCascadeValue;
-						// List to store the path through which the cascading proceeds.
-						CascadeList currentCascadeDetail = new CascadeList();
-						cascadePathThread.cascadeList = currentCascadeDetail;
-						cascadePathThread.visitedSC = visitedSC;
-						cascadePathThread.serviceCenter = boundaryVertex.serviceCenter;
-						cascadePathThread.demandNode = boundaryVertex.demandNode;
-						tpe.execute(cascadePathThread);
-					}
+					cascadePathThread.cascadePathCost = cascadeObjFn;
+					cascadePathThread.visitedSC = visitedSC;
+					cascadePathThread.serviceCenter = boundaryVertex.serviceCenter;
+					cascadePathThread.demandNode = boundaryVertex.demandNode;
+					tpe.execute(cascadePathThread);
+					//System.out.println("Task Count : " + tpe.getTaskCount());
+					
+				}
+				//System.out.println("Final Task Count : " + tpe.getTaskCount() + "Completed Task : "+ tpe.getCompletedTaskCount());
+				while(tpe.getTaskCount()!=tpe.getCompletedTaskCount()) {
+					//try {Thread.sleep(20);}catch(Exception e) {}
 				}
 				
 				//Wait for all the threads to complete their execution
 				tpe.shutdown();
 				tpe.awaitTermination(7200, TimeUnit.SECONDS);
 				while(!tpe.isTerminated()) {
-					try {Thread.sleep(200);}catch(Exception e) {}
+					try {Thread.sleep(20);}catch(Exception e) {}
 				}
 				// Check if the cascading needs to happen or not.
 				if(CascadeThread.minCostAcrossAllThreads<baseObjFn) { 
 				//	System.out.println("It means that cascading cost is less than the direct allocation of demand to service center.");
 					// It means that cascading cost is less than the direct allocation of demand to service center.
 					token.serviceCenter.addAllocation(token.demandNode,token.distance);
+					totalPenalizeCost+=CascadeThread.minCostAcrossAllThreads;
 					updateBoundaryVertices(token.serviceCenter,token.demandNode);
 					// Now we are checking if the incoming demand nodes to the token demand node has become boundary vertices or not.
 					if(incomingEdgeMap.get(token.demandNode.dnid)!=null) {
@@ -182,9 +187,9 @@ public class ParallelAdvanceLoral {
 		//System.out.println("*********** Inside a perform Cascade function *********************");
 		for(int i=0; i<cascadeList.size; i++) {
 			CascadePath path = cascadeList.list[i];
-			
-		//	System.out.println("---------Cascading performance between "+path.demandNode.dnid+" & "+path.serviceCenter.scid);
-			
+			if(allowPrint)
+				System.out.println("---------Cascading performance between DN = "+path.demandNode.dnid+" & SC = "+path.serviceCenter.scid + " Dis=" + path.distance);
+				
 			// First remove the demand vertex previous allocation
 			path.demandNode.allocation.removeAllocation(path.demandNode);
 			// Now add allocation to the new service center
