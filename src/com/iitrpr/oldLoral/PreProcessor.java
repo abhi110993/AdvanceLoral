@@ -43,6 +43,7 @@ public class PreProcessor {
     		}
     		i++;
     	}
+    	br.close();
     }
     
 	public void loadEdges() throws IOException{
@@ -66,6 +67,7 @@ public class PreProcessor {
     			Loral.incomingEdgeMap.get(lineSplit[1]).put(lineSplit[0],Integer.parseInt(lineSplit[2]));
     		}
     	}
+    	br.close();
     }
 	//changed
 	public void distanceMatrixToDemandNodes() throws IOException{
@@ -90,7 +92,6 @@ public class PreProcessor {
     				}else if(map.get(demandNode).distance>cost) {
     					map.put(demandNode,new DistToSCToken(sc,cost));
     				}
-    			//	ParallelAdvanceLoral.demandNodeProcessQueue.add(new DnToScToken(1, sc, demandNode));
     			}
     		}
     		i++;

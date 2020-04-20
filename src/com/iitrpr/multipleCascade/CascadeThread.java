@@ -1,4 +1,4 @@
-package com.iitrpr.parallelCascade;
+package com.iitrpr.multipleCascade;
 
 import java.util.HashMap;
 import java.util.HashSet;

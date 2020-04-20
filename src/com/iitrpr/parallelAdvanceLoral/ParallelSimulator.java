@@ -28,7 +28,7 @@ public class ParallelSimulator {
 		ParallelAdvanceLoral.bestK=ParallelAdvanceLoral.serviceMap.size();
 		
 		//ParallelAdvanceLoral.noOfThreads = Runtime.getRuntime().availableProcessors()-3;
-		ParallelAdvanceLoral.noOfThreads = 1;
+		ParallelAdvanceLoral.noOfThreads = 8;
 		System.out.println("Total no of threads available are = " + ParallelAdvanceLoral.noOfThreads);
 		
 		//Time calculation after preprocessing
@@ -39,7 +39,7 @@ public class ParallelSimulator {
 		
 		double endTime = System.nanoTime();
 		// This will print all the allocation which the service center has attained.
-		//loral.printAllInformation();
+		loral.printAllInformation();
 		System.out.println("Total Execution time in ns = " + (endTime - startTime));
 		System.out.println("Total Objective Function = " + loral.objectiveFunction);
 		System.out.println("Total Cost because of cascading = " + loral.totalPenalizeCost);

@@ -1,4 +1,4 @@
-package com.iitrpr.parallelCascade;
+package com.iitrpr.multipleCascade;
 import com.iitrpr.advanceLoral.CascadePath;
 
 public class CascadeList {

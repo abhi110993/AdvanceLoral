@@ -1,4 +1,4 @@
-package com.iitrpr.parallelCascade;
+package com.iitrpr.multipleCascade;
 
 public class CostCascades implements Comparable<CostCascades>{
 	

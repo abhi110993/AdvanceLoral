@@ -42,7 +42,7 @@ public class Simulator {
 		
 		double endTime = System.nanoTime();
 		// This will print all the allocation which the service center has attained.
-		loral.printAllInformation();
+		//loral.printAllInformation();
 		System.out.println("Total Execution time in ns = " + (endTime - startTime));
 		System.out.println("Total Objective Function = " + loral.objectiveFunction);
 	} 
