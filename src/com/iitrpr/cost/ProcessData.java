@@ -33,7 +33,10 @@ public class ProcessData {
 			System.out.println("Service Nodes prepared");
 			String path = "./dataset/"+ratio+"/ServiceCenter.txt";
 			int capacity = Math.round(((noOfNodes-noOfSC)*ratioTotalCapacityToDemandNode)/noOfSC);
-			saveServiceNodesToFile(capacity,20,path);
+			//int penaltyRange = (int)(Math.pow(10, (int)Math.log10(noOfNodes)-1));
+			int penaltyRange = 100;
+			System.out.println("Penalty Range : " + penaltyRange);
+			saveServiceNodesToFile(capacity,penaltyRange,path);
 			// You can also save your service centers manually. Check saveServiceNodesToFileManually function.
 			//saveServiceNodesToFileManually(path);
 			System.out.println("Service Nodes are written to file");
@@ -81,8 +84,9 @@ public class ProcessData {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(path));
 		Random random = new Random();
 		int penalty=0;
+		
 		for(String sc : serviceNodes) {
-			penalty = (random.nextInt(penaltyRange-10) + 10);
+			penalty = (random.nextInt(penaltyRange/2)+penaltyRange/2);
 			String line = sc + "," + capacity + "," + penalty;
 			bw.write(line);
 			bw.newLine();

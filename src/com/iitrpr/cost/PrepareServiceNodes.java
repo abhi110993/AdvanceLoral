@@ -1,48 +1,51 @@
 package com.iitrpr.cost;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
-import java.util.Scanner;
 
 public class PrepareServiceNodes {
 	
-	static String serviceNodes = "./dataset/servicenodes.txt";
-	static int penaltyRange;
-	static int d,s,e;
-	static float ratioTotalCapacityToDemandNode;
+	static int noOfNodes=7000;
+	static int noOfSC;
+	static HashMap<String, Integer> nodesIndexMap;
+	static float ratioTotalCapacityToDemandNode = 0.7f;
+	static ArrayList<String> nodes;
 	
 	public static void main(String[] args) throws Exception{
-		int n=1000;
-        float ratioDemandToService = 299;
-        e=2254;
-        penaltyRange = 20; //Should be greater than 10
-        ratioTotalCapacityToDemandNode = 0.7f;
-        
-        s=(int) ((n)/(ratioDemandToService+1));
-        d=n-s;
-        prepareServiceNodesFile();
+		
+		int[] ratioDemandToService = {700,600,500,400,300};
+		//int[] ratioDemandToService = {300};
+		for(int ratio : ratioDemandToService) {
+			noOfSC=((noOfNodes)/(ratio+1));
+			String path = "./dataset/"+ratio+"/ServiceCenter.txt";
+			int capacity = Math.round(((noOfNodes-noOfSC)*ratioTotalCapacityToDemandNode)/noOfSC);
+			int penaltyRange = 100;
+			saveServiceNodesToFile(capacity,penaltyRange,path);
+			System.out.println("Service Nodes are written to file");
+		}
 	}
 	
-	static void prepareServiceNodesFile() throws FileNotFoundException, IOException{
-        Scanner read = new Scanner (new File(serviceNodes));
-        BufferedWriter service = new BufferedWriter(new FileWriter("./dataset/finalservice.txt"));
-        Random r_c = new Random();
-        Random r_p = new Random();
-        while(read.hasNextLine()){
-            String st = read.nextLine();
-            //int capacity = (r_c.nextInt((350 - 250) + 1) + 250);
-            int capacity = Math.round((d*ratioTotalCapacityToDemandNode)/s);
-            
-            //int penalty = (r_p.nextInt((80 - 50) + 1) + 50);
-            int penalty = (r_p.nextInt(penaltyRange-10) + 10);
-            service.write("545641483,28.5978094,77.1808404,Secondary School,"+st+",28.5973249,77.181114,"+String.valueOf(capacity)+","+String.valueOf(penalty));
-            service.newLine();
-        }
-       service.close();
-    }
-	
+	static void saveServiceNodesToFile(int capacity, int penaltyRange, String path) throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(new File(path)));
+		String line = "";
+		String[] serviceNodes = new String[noOfSC];
+		for(int i = 0;i<noOfSC;i++) {
+			line = br.readLine();
+			serviceNodes[i] = line.split(",")[0];
+		}
+		br.close();
+		BufferedWriter bw = new BufferedWriter(new FileWriter(path));
+		Random random = new Random();
+		int penalty=0;
+		
+		for(String sc : serviceNodes) {
+			penalty = (random.nextInt(penaltyRange)+1);
+			line = sc + "," + capacity + "," + penalty;
+			bw.write(line);
+			bw.newLine();
+		}
+		bw.close();
+	}
 }

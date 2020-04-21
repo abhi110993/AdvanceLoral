@@ -18,17 +18,8 @@ public class AdvanceSimulator {
 		preprocess.distanceMatrixToDemandNodes();
 		// Threshold is for limiting the cascading length
 		AdvanceLoral.threshold = AdvanceLoral.serviceMap.size();
-		//Loral.threshold = 0;
-		
 		// BestK is for limiting the boundary nodes to service node pairs for cascading. 
-		//Loral.bestK = Loral.demandMap.size();
-		AdvanceLoral.bestK=Integer.MAX_VALUE;
-		
-		//Initial Stage
-		//loral.printAllInformation();
-		
-		//Time calculation after preprocessing
-		//double startTime = System.currentTimeMillis();
+		AdvanceLoral.bestK=AdvanceLoral.serviceMap.size();
 		double startTime = System.nanoTime();
 		
 		loral.performLoral();

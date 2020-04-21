@@ -21,18 +21,10 @@ public class ParallelSimulator {
 		preprocess.distanceMatrixToDemandNodes();
 		// Threshold is for limiting the cascading length
 		ParallelAdvanceLoral.threshold = ParallelAdvanceLoral.serviceMap.size();
-		//Loral.threshold = 0;
-		
-		// BestK is for limiting the boundary nodes to service node pairs for cascading. 
-		//ParallelAdvanceLoral.bestK = Loral.demandMap.size();
 		ParallelAdvanceLoral.bestK=ParallelAdvanceLoral.serviceMap.size();
-		
 		//ParallelAdvanceLoral.noOfThreads = Runtime.getRuntime().availableProcessors()-3;
-		ParallelAdvanceLoral.noOfThreads = 8;
+		ParallelAdvanceLoral.noOfThreads = Runtime.getRuntime().availableProcessors()-2;
 		System.out.println("Total no of threads available are = " + ParallelAdvanceLoral.noOfThreads);
-		
-		//Time calculation after preprocessing
-		//double startTime = System.currentTimeMillis();
 		double startTime = System.nanoTime();
 		
 		loral.performLoral();

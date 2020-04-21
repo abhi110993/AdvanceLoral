@@ -30,9 +30,6 @@ public class AdvanceLoral {
 			
 			if(token==null || token.demandNode.isAllocated())
 				continue;
-			//System.out.println(token.serviceCenter.scid);
-			//System.out.println(objectiveFunction);
-			//System.out.println("Processing : DN = "+token.demandNode.dnid + " sc = " + token.serviceCenter.scid + " Dis=" + token.distance);
 			System.out.println("Demand node in execution = " + noOfTokensExecuted++);
 			
 		// If the service center has the capacity then allocate the demand node to the service center.
@@ -73,12 +70,9 @@ public class AdvanceLoral {
 						}
 					}
 				}
-				for(Map.Entry<ServiceCenter, DemandNode> entry : findBestDNodeForSC.entrySet()) {
+				for(Map.Entry<ServiceCenter, DemandNode> entry : findBestDNodeForSC.entrySet()) 
 					bestKBoundaryVertices.add(new BoundaryAndItsObjFn(entry.getValue().getDistanceToSC(entry.getKey())-entry.getValue().distanceToAllocatedSC, entry.getValue(), entry.getKey()));
-				}
-				
 				findBestDNodeForSC.clear();
-				
 				// Initializing it to the base object function to campare it to all the cascading cost.
 				minCascadeCost = baseObjFn;
 				finalCascadeList = new CascadeList();
@@ -95,7 +89,7 @@ public class AdvanceLoral {
 					// List to store the path through which the cascading proceeds.
 					CascadeList currentCascadeDetail = new CascadeList();
 					// Cascading Cost Calculation
-					cascadeObjFn = cascadePath(cascadeObjFn, currentCascadeDetail, visitedSC, boundaryVertex.serviceCenter, boundaryVertex.demandNode);
+					cascadePath(cascadeObjFn, currentCascadeDetail, visitedSC, boundaryVertex.serviceCenter, boundaryVertex.demandNode);
 					
 				}
 				
