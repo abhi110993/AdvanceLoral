@@ -58,27 +58,15 @@ public class Loral {
 				int baseObjFn = token.distance + token.serviceCenter.penalty;
 				PriorityQueue<BoundaryAndItsObjFn> bestKBoundaryVertices = new PriorityQueue<BoundaryAndItsObjFn>();
 				//This hashmap is used to find the best demand node between the service centers
-				HashMap<ServiceCenter,DemandNode> findBestDNodeForSC = new HashMap<ServiceCenter, DemandNode>();
 				for(DemandNode dNode : token.serviceCenter.boundaryVertices) {
 					// This loop is to add the demand node and service center distance to the Tree Set.
 					for(Map.Entry<ServiceCenter, Integer> distanceDetail : dNode.distanceToSC.entrySet()) {
-						
 						// There's no point adding something whose distance is greater than the base objective function value
-						if(baseObjFn>distanceDetail.getValue() && (dNode.allocation!=distanceDetail.getKey())) {
-							DemandNode prevBestDNode = findBestDNodeForSC.get(distanceDetail.getKey());
-							if((prevBestDNode==null) || ((distanceDetail.getValue()-dNode.distanceToAllocatedSC)<(prevBestDNode.getDistanceToSC(distanceDetail.getKey())-prevBestDNode.distanceToAllocatedSC))) {
-								findBestDNodeForSC.put(distanceDetail.getKey(), dNode);
-								//if(tokenIndex==checkIndex+1)
-								//	System.out.println("Hash addition : "+ demandNode.dnid+ "-" +distanceDetail.getKey().scid+"="+(distanceDetail.getValue()-demandNode.distanceToAllocatedSC));
-							}
+						if(dNode.allocation!=distanceDetail.getKey()) {
+							bestKBoundaryVertices.add(new BoundaryAndItsObjFn(dNode.getDistanceToSC(distanceDetail.getKey())-dNode.distanceToAllocatedSC, dNode, distanceDetail.getKey()));
 						}
 					}
 				}
-				for(Map.Entry<ServiceCenter, DemandNode> entry : findBestDNodeForSC.entrySet()) {
-					bestKBoundaryVertices.add(new BoundaryAndItsObjFn(entry.getValue().getDistanceToSC(entry.getKey())-entry.getValue().distanceToAllocatedSC, entry.getValue(), entry.getKey()));
-				}
-				
-				findBestDNodeForSC.clear();
 				
 				//Initializing it to the base object function to campare it to all the cascading cost.
 				minCascadeCost = baseObjFn;
