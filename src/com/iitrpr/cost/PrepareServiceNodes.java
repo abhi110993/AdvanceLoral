@@ -21,7 +21,7 @@ public class PrepareServiceNodes {
 			noOfSC=((noOfNodes)/(ratio+1));
 			String path = "./dataset/"+ratio+"/ServiceCenter.txt";
 			int capacity = Math.round(((noOfNodes-noOfSC)*ratioTotalCapacityToDemandNode)/noOfSC);
-			int penaltyRange = 100;
+			int penaltyRange = noOfSC*10;
 			saveServiceNodesToFile(capacity,penaltyRange,path);
 			System.out.println("Service Nodes are written to file");
 		}

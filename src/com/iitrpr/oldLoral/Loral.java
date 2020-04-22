@@ -143,7 +143,7 @@ public class Loral {
 	
 	public int cascadePath(int cascadePathCost, CascadeList cascadeList,HashSet<ServiceCenter> visitedSC, ServiceCenter serviceCenter, DemandNode demandNode) {
 		// Cascading happens till the time the visited service center length becomes equal to the threshold.
-		if(cascadePathCost>minCascadeCost || threshold==0) {
+		if(threshold==0) {
 			return Integer.MAX_VALUE;
 		}
 		// Distance between demand node and service center.
@@ -173,7 +173,7 @@ public class Loral {
 				// This loop is to add the demand node and service center distance to the Tree Set.
 				for(Map.Entry<ServiceCenter, Integer> distanceDetail : boundaryDemandNode.distanceToSC.entrySet()) {
 					if((baseObjFn>distanceDetail.getValue()) && (!visitedSC.contains(distanceDetail.getKey())) && (demandNode.allocation!=distanceDetail.getKey())) {
-						int cost = distanceDetail.getValue()-boundaryDemandNode.distanceToAllocatedSC;
+						int cost = cascadePathCost + distanceDetail.getValue()-boundaryDemandNode.distanceToAllocatedSC;
 						if(distanceDetail.getKey().isfull())
 							cost += distanceDetail.getKey().penalty;
 						if(cost<bestKMin) {
