@@ -7,8 +7,6 @@ import com.iitrpr.advanceLoral.DemandNode;
 import com.iitrpr.oldLoral.Loral;
 import com.iitrpr.advanceLoral.ServiceCenter;
 
-
-
 public class Simulator {
 
 	public static void main(String[] args) throws IOException{
