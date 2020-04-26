@@ -9,10 +9,11 @@ import java.io.*;
 
 public class PreProcessor {
     
-	private String serviceDetails = "./Resource/ServiceCenter.txt";
-	private String allNodesDetails = "./Resource/nodes.txt";
-	private String allEdgeDetails = "./Resource/edges.txt";
-	private String distanceMatrix = "./Resource/CostMatrix.txt";
+	static int ratio;
+	private String serviceDetails = "./dataset/"+ratio+"/ServiceCenter.txt";
+	private String allNodesDetails = "./dataset/"+ratio+"/nodes.txt";
+	private String allEdgeDetails = "./dataset/"+ratio+"/edges.txt";
+	private String distanceMatrix = "./dataset/"+ratio+"/CostMatrix.txt";
 	private BufferedReader br;
 	private HashMap<Integer, DemandNode> demandNodeIndexMapping = new HashMap<Integer, DemandNode>();
 	private HashMap<Integer, ServiceCenter> serviceCenterIndexMapping = new HashMap<Integer, ServiceCenter>();

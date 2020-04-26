@@ -10,7 +10,7 @@ public class ProcessData {
 	static HashMap<String, Integer> nodesIndexMap;
 	static int[][] nXnMatrix;
 	static String[] serviceNodes;
-	static float ratioTotalCapacityToDemandNode = 0.7f;
+	static float ratioTotalCapacityToDemandNode = 0.5f;
 	static ArrayList<String> nodes;
 	
 	
@@ -23,7 +23,7 @@ public class ProcessData {
 		System.out.println("All pair shortest path is applied");
 		//printNxNmatrix();
 		
-		int[] ratioDemandToService = {700,600,500,400,300};
+		int[] ratioDemandToService = {700,600,500,400,300,200,100};
 		//int[] ratioDemandToService = {2};
 		for(int ratio : ratioDemandToService) {
 	       	//This would take the ratio and all other details to prepare the service nodes
@@ -34,7 +34,7 @@ public class ProcessData {
 			String path = "./dataset/"+ratio+"/ServiceCenter.txt";
 			int capacity = Math.round(((noOfNodes-noOfSC)*ratioTotalCapacityToDemandNode)/noOfSC);
 			//int penaltyRange = (int)(Math.pow(10, (int)Math.log10(noOfNodes)-1));
-			int penaltyRange = 100;
+			int penaltyRange = 200;
 			System.out.println("Penalty Range : " + penaltyRange);
 			saveServiceNodesToFile(capacity,penaltyRange,path);
 			// You can also save your service centers manually. Check saveServiceNodesToFileManually function.

@@ -27,14 +27,14 @@ public class Loral {
 	public void performLoral() {
 		//int tokenIndex=1;
 		//For loop for demand nodes being unassigned to the service center.
-		int noOfTokensExecuted = 0;
+		//int noOfTokensExecuted = 0;
 		//while(tokenIndex++<checkIndex+1) {
 		while(!demandNodeProcessQueue.isEmpty()) {
 			// Token to get the service center and demand node with the minimum distance between them.
 			DnToScToken token = demandNodeProcessQueue.poll();
 			if(token==null || token.demandNode.isAllocated())
 				continue;
-			System.out.println("Demand node in execution = " + noOfTokensExecuted++);
+			//System.out.println("Demand node in execution = " + noOfTokensExecuted++);
 			// If the service center has the capacity then allocate the demand node to the service center.
 			if(!token.serviceCenter.isfull()) {
 				// Since the capacity is >0, so the increase in objective function is only because of the distance. 
@@ -126,7 +126,7 @@ public class Loral {
 			}
 		}
 		
-		System.out.println("*************The total objective cost is : " + objectiveFunction + "*************");
+		//System.out.println("*************The total objective cost is : " + objectiveFunction + "*************");
 	}
 	
 	public int cascadePath(int cascadePathCost, CascadeList cascadeList,HashSet<ServiceCenter> visitedSC, ServiceCenter serviceCenter, DemandNode demandNode) {

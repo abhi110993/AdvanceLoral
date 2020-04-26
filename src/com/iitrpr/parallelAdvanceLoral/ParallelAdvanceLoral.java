@@ -34,7 +34,7 @@ public class ParallelAdvanceLoral {
 	 * */
 	public void performLoral() throws InterruptedException{
 		//int tokenIndex=1;
-		int noOfTokensExecuted = 0;
+		//int noOfTokensExecuted = 0;
 		//For loop for demand nodes being unassigned to the service center.
 		while(!demandNodeProcessQueue.isEmpty()) {
 		//while(tokenIndex++<checkIndex+1) {
@@ -47,7 +47,7 @@ public class ParallelAdvanceLoral {
 			//System.out.println(token.demandNode.dnid);
 			//System.out.println(objectiveFunction);
 			//System.out.println("Processing : DN = "+token.demandNode.dnid + " sc = " + token.serviceCenter.scid + " Dis=" + token.distance);
-			System.out.println("Demand node in execution = " + noOfTokensExecuted++);
+			//System.out.println("Demand node in execution = " + noOfTokensExecuted++);
 			
 			// If the service center has the capacity then allocate the demand node to the service center.
 			if(!token.serviceCenter.isfull()) {
@@ -171,7 +171,7 @@ public class ParallelAdvanceLoral {
 			}
 		}
 		
-		System.out.println("*************The total objective cost is : " + objectiveFunction + "*************");
+		//System.out.println("*************The total objective cost is : " + objectiveFunction + "*************");
 	}
 	
 	public void performCascading(CascadeList cascadeList) {
