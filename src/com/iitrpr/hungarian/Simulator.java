@@ -7,6 +7,7 @@ public class Simulator {
 
 	public static void main(String[] args) throws IOException {
 		int[] demandToScRatio = { 100, 200, 300, 400, 500 };
+		//int[] demandToScRatio = { 500 };
 		for (int r : demandToScRatio) {
 			System.out.println("***********************************************************");
 			String ratio = r + "";

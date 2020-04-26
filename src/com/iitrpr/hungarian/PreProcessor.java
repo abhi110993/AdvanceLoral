@@ -13,6 +13,7 @@ public class PreProcessor {
 	// private ArrayList<ArrayList<Double>> costMatrix;
 	private int demandNodes;
 	private int serviceCenters;
+	int maxDistance;
 	private int total;
 	private String[] demandNodesLabels;
 	private String[] serviceCenterLabels;
@@ -37,8 +38,7 @@ public class PreProcessor {
 	}
 
 	public double getDummyWeight() {
-		double weight = this.costMatrix[this.demandNodes + 1][0];
-		return weight;
+		return maxDistance;
 	}
 
 	public int getTotal() {
@@ -104,7 +104,7 @@ public class PreProcessor {
 			this.serviceCenterLabels[i] = serviceCenter.get(i);
 		}
 		br = new BufferedReader(new FileReader(this.fileName + "CostMatrix.txt"));
-		int maxDistance = 0;
+		maxDistance = 0;
 		int k = 0;
 		for (i = 0; i < nodeMap.size(); i++) {
 			if (serviceCenter.contains(nodeMap.get(i))) {
@@ -120,14 +120,15 @@ public class PreProcessor {
 				if (maxDistance < distance + penalty) {
 					maxDistance = distance + penalty;
 				}
-				fillCostMatrixForISC(distance, penalty, capacity.get(j), i, j);
+				fillCostMatrixForISC(distance, penalty, capacity.get(j), i-k, j);
 			}
 		}
 		br.close();
+		maxDistance++;
 		int dummyNodeIndex = demandNodes;
 		for (i = dummyNodeIndex; i < total; i++) {
 			for (int j = 0; j < total; j++) {
-				costMatrix[i][j] = maxDistance + 1;
+				costMatrix[i][j] = maxDistance;
 			}
 		}
 		return this.costMatrix;
