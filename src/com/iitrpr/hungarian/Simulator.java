@@ -6,7 +6,7 @@ import java.io.IOException;
 public class Simulator {
 
 	public static void main(String[] args) throws IOException {
-		int[] demandToScRatio = { 100, 200, 300, 400, 500 };
+		int[] demandToScRatio = { 200, 300, 400, 500 };
 		//int[] demandToScRatio = { 100 };
 		for (int r : demandToScRatio) {
 			System.out.println("***********************************************************");
