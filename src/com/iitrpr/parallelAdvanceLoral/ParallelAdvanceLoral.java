@@ -34,7 +34,7 @@ public class ParallelAdvanceLoral {
 	 * */
 	public void performLoral() throws InterruptedException{
 		//int tokenIndex=1;
-		//int noOfTokensExecuted = 0;
+		int noOfTokensExecuted = 0;
 		//For loop for demand nodes being unassigned to the service center.
 		while(!demandNodeProcessQueue.isEmpty()) {
 		//while(tokenIndex++<checkIndex+1) {

@@ -11,6 +11,7 @@ public class Simulator {
 
 	public static void main(String[] args) throws IOException{
 		int[] demandToScRatio = {100,200,300,400,500};
+		//int[] demandToScRatio = {100};
 		for(int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");
 			PreProcessor.ratio=ratio;

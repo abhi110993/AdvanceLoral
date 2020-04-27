@@ -7,7 +7,7 @@ public class Simulator {
 
 	public static void main(String[] args) throws IOException {
 		int[] demandToScRatio = { 100, 200, 300, 400, 500 };
-		//int[] demandToScRatio = { 500 };
+		//int[] demandToScRatio = { 100 };
 		for (int r : demandToScRatio) {
 			System.out.println("***********************************************************");
 			String ratio = r + "";
@@ -19,9 +19,9 @@ public class Simulator {
 			double endTime = System.nanoTime();
 			double duration = (endTime - startTime);
 			double minWeight = 0;
-			String[] demandNodeLabels = p.getDemandNodeLabels();
-			String[] serviceCenterLabels = p.getServiceCenterLabels();
-			int totalDemandNodes = p.getTotalNoOfDemandNodes();
+			//String[] demandNodeLabels = p.getDemandNodeLabels();
+			//String[] serviceCenterLabels = p.getServiceCenterLabels();
+			//int totalDemandNodes = p.getTotalNoOfDemandNodes();
 			//System.out.println("Demand node id--Service node id");
 			for (int i = 0; i < result.length; i++) {
 				//if (i < totalDemandNodes) {

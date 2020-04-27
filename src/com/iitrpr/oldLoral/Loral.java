@@ -27,7 +27,7 @@ public class Loral {
 	public void performLoral() {
 		//int tokenIndex=1;
 		//For loop for demand nodes being unassigned to the service center.
-		//int noOfTokensExecuted = 0;
+		int noOfTokensExecuted = 0;
 		//while(tokenIndex++<checkIndex+1) {
 		while(!demandNodeProcessQueue.isEmpty()) {
 			// Token to get the service center and demand node with the minimum distance between them.
