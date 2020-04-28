@@ -15,10 +15,10 @@ public class PrepareServiceNodes {
 	static float ratioTotalCapacityToDemandNode = 0.7f;
 	static ArrayList<String> nodes;
 	static int[] capacities;
-	static int penaltyRange = 100;
+	static int penaltyRange = 200;
 	static Random random = new Random();
 	public static void main(String[] args) throws Exception{
-		int[] ratioDemandToService = {300,400,500};
+		int[] ratioDemandToService = {300,400,500,600,700};
 		//int[] ratioDemandToService = {300};
 		for(int ratio : ratioDemandToService) {
 			noOfSC=((noOfNodes)/(ratio+1));
