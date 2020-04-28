@@ -10,7 +10,7 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 public class Simulator {
 
 	public static void main(String[] args) throws IOException{
-		int[] demandToScRatio = {100,200,300,400,500};
+		int[] demandToScRatio = { 300, 400, 500,600,700 };
 		//int[] demandToScRatio = {100};
 		for(int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");
@@ -30,7 +30,7 @@ public class Simulator {
 			Loral.threshold = Loral.serviceMap.size();
 			// BestK is for limiting the boundary nodes to service node pairs for cascading. 
 			//Loral.bestK=Loral.serviceMap.size();
-			Loral.bestK=Integer.MAX_VALUE;
+			Loral.bestK=Loral.serviceMap.size();
 			double startTime = System.nanoTime();
 			
 			loral.performLoral();

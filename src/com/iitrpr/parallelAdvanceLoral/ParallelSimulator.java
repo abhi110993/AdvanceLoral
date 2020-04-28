@@ -8,7 +8,7 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 public class ParallelSimulator {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int[] demandToScRatio = { 100, 200, 300, 400, 500 };
+		int[] demandToScRatio = { 300, 400, 500,600,700 };
 		//int[] demandToScRatio = { 100};
 		for (int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");
@@ -30,7 +30,7 @@ public class ParallelSimulator {
 			ParallelAdvanceLoral.bestK = ParallelAdvanceLoral.serviceMap.size();
 			// ParallelAdvanceLoral.noOfThreads =
 			// Runtime.getRuntime().availableProcessors()-3;
-			ParallelAdvanceLoral.noOfThreads = Runtime.getRuntime().availableProcessors() - 2;
+			ParallelAdvanceLoral.noOfThreads = 65;
 			System.out.println("Total no of threads available are = " + ParallelAdvanceLoral.noOfThreads);
 			double startTime = System.nanoTime();
 
