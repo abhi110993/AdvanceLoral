@@ -10,8 +10,8 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 public class Simulator {
 
 	public static void main(String[] args) throws IOException{
-		int[] demandToScRatio = {400, 500,600,700 };
-		//int[] demandToScRatio = {400};
+		//int[] demandToScRatio = {400, 500,600,700 };
+		int[] demandToScRatio = {700};
 		for(int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");
 			PreProcessor.ratio=ratio;
