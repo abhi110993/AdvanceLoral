@@ -47,7 +47,7 @@ public class ParallelAdvanceLoral {
 			//System.out.println(token.demandNode.dnid);
 			//System.out.println(objectiveFunction);
 			//System.out.println("Processing : DN = "+token.demandNode.dnid + " sc = " + token.serviceCenter.scid + " Dis=" + token.distance);
-		//	System.out.println("Demand node in execution = " + noOfTokensExecuted++);
+			//System.out.println("Demand node in execution = " + noOfTokensExecuted++);
 			
 			// If the service center has the capacity then allocate the demand node to the service center.
 			if(!token.serviceCenter.isfull()) {
