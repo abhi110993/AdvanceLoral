@@ -9,17 +9,17 @@ import java.util.Random;
 
 public class PrepareServiceNodes {
 	
-	static int noOfNodes=23839;
+	static int noOfNodes=65902;
 	static int noOfSC;
 	static HashMap<String, Integer> nodesIndexMap;
 	static float ratioTotalCapacityToDemandNode = 0.7f;
 	static ArrayList<String> nodes;
 	static int[] capacities;
-	static int penaltyRange = 200;
+	static int penaltyRange = 100;
 	static Random random = new Random();
 	public static void main(String[] args) throws Exception{
-		//int[] ratioDemandToService = {400,500,600,700};
-		int[] ratioDemandToService = {400};
+		int[] ratioDemandToService = {400,500,600,700};
+		//int[] ratioDemandToService = {400};
 		for(int ratio : ratioDemandToService) {
 			noOfSC=((noOfNodes)/(ratio+1));
 			String path = "./dataset/"+ratio+"/ServiceCenter.txt";

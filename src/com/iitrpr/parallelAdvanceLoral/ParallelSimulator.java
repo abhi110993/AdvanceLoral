@@ -8,7 +8,7 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 public class ParallelSimulator {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int[] demandToScRatio = {400};
+		int[] demandToScRatio = {400,500,600,700};
 		//int[] demandToScRatio = { 700};
 		for (int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");
@@ -27,7 +27,7 @@ public class ParallelSimulator {
 			preprocess.distanceMatrixToDemandNodes();
 			// Threshold is for limiting the cascading length
 			ParallelAdvanceLoral.threshold = ParallelAdvanceLoral.serviceMap.size();
-			ParallelAdvanceLoral.bestK = ParallelAdvanceLoral.serviceMap.size();
+			ParallelAdvanceLoral.bestK = ParallelAdvanceLoral.serviceMap.size()/4;
 			// ParallelAdvanceLoral.noOfThreads =
 			// Runtime.getRuntime().availableProcessors()-3;
 			ParallelAdvanceLoral.noOfThreads = 65;
