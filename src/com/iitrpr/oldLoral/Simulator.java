@@ -11,7 +11,7 @@ public class Simulator {
 
 	public static void main(String[] args) throws IOException{
 		//int[] demandToScRatio = {400, 500,600,700 };
-		int[] demandToScRatio = {600,700};
+		int[] demandToScRatio = {400};
 		for(int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");
 			PreProcessor.ratio=ratio;
@@ -27,10 +27,10 @@ public class Simulator {
 			preprocess.loadEdges();
 			preprocess.distanceMatrixToDemandNodes();
 			// Threshold is for limiting the cascading length
-			Loral.threshold = Loral.serviceMap.size()/4;
+			Loral.threshold = Loral.serviceMap.size();
 			// BestK is for limiting the boundary nodes to service node pairs for cascading. 
-			//Loral.bestK=Loral.serviceMap.size();
 			Loral.bestK=Loral.serviceMap.size();
+			//Loral.bestK=Integer.MAX_VALUE;
 			double startTime = System.nanoTime();
 			
 			loral.performLoral();

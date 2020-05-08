@@ -1,4 +1,4 @@
-package com.iitrpr.threadIndependence;
+package com.iitrpr.pureParallel;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import com.iitrpr.advanceLoral.DemandNode;
 import com.iitrpr.advanceLoral.DnToScToken;
 import com.iitrpr.advanceLoral.ServiceCenter;
 
-public class ParallelAdvanceLoral {
+public class PureParallelLoral {
 
 	static HashMap<String, DemandNode> demandMap;
 	static HashMap<String, ServiceCenter> serviceMap;
@@ -116,9 +116,6 @@ public class ParallelAdvanceLoral {
 					cascadePathThread.visitedSC = visitedSC;
 					cascadePathThread.serviceCenter = boundaryVertex.serviceCenter;
 					cascadePathThread.demandNode = boundaryVertex.demandNode;
-					cascadePathThread.minCascadeCost = baseObjFn;
-					cascadePathThread.threshold = threshold;
-					cascadePathThread.bestK = bestK;
 					tpe.execute(cascadePathThread);
 				}
 				

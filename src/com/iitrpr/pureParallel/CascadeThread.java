@@ -1,10 +1,14 @@
-package com.iitrpr.threadIndependence;
+package com.iitrpr.pureParallel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import com.iitrpr.advanceLoral.BoundaryAndItsObjFn;
 import com.iitrpr.advanceLoral.CascadePath;
@@ -19,25 +23,27 @@ public class CascadeThread implements Runnable{
 	ServiceCenter serviceCenter;
 	DemandNode demandNode;
 	int finalReturnValue;
-	int minCascadeCost;
-	int threshold;
-	int bestK;
 	
 	public CascadeThread() {
 		super();
 	}
 	
 	public void run() {
-		cascadePath(threshold,minCascadeCost,cascadePathCost, cascadeList, visitedSC, serviceCenter, demandNode);
+		try {
+			cascadePath(cascadePathCost, cascadeList, visitedSC, serviceCenter, demandNode);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public int cascadePath(int threshold,int minCascadeCost,int cascadePathCost, CascadeList cascadeList,HashSet<ServiceCenter> visitedSC, ServiceCenter serviceCenter, DemandNode demandNode) {
+	public void cascadePath(int cascadePathCost, CascadeList cascadeList,HashSet<ServiceCenter> visitedSC, ServiceCenter serviceCenter, DemandNode demandNode) throws InterruptedException {
 		// Cascading happens till the time the visited service center length becomes equal to the threshold.
 		//System.out.println("Cascading Called for sc=" + serviceCenter.scid + " dn=" + demandNode.dnid);
 		//System.out.println("Inside a cascade and here the cascade cost is = "+cascadePathCost);
 		
-		if(cascadePathCost>minCascadeCost || threshold==0) {
-			return Integer.MAX_VALUE;
+		if(cascadePathCost>PureParallelLoral.minCascadeCost || PureParallelLoral.threshold==0) {
+			finalReturnValue = Integer.MAX_VALUE;
 		}
 		
 		// Distance between demand node and service center.
@@ -47,12 +53,12 @@ public class CascadeThread implements Runnable{
 		cascadeList.insertAtEnd(new CascadePath(serviceCenter, demandNode, distance));
 		
 		if(!serviceCenter.isfull()) {
-			ParallelAdvanceLoral.copyPathToFinalList(cascadePathCost,cascadeList);
-			return cascadePathCost;
+			PureParallelLoral.copyPathToFinalList(cascadePathCost,cascadeList);
+			finalReturnValue = cascadePathCost;
 		} 
-		else if(visitedSC.size() >= threshold) {
-			ParallelAdvanceLoral.copyPathToFinalList(cascadePathCost + serviceCenter.penalty,cascadeList);
-			return cascadePathCost + serviceCenter.penalty;
+		else if(visitedSC.size() >= PureParallelLoral.threshold) {
+			PureParallelLoral.copyPathToFinalList(cascadePathCost + serviceCenter.penalty,cascadeList);
+			finalReturnValue = cascadePathCost + serviceCenter.penalty;
 		}
 		else {
 			// Adding the service center to the visited service center so that it is not further processed.
@@ -84,28 +90,53 @@ public class CascadeThread implements Runnable{
 			}
 			
 			findBestDNodeForSC.clear();
+			finalReturnValue = baseObjFn;
 			
 			// Initializing it to the base object function to compare it to all the cascading cost.
-			int localMinCascadeCost = baseObjFn;
 			int k=0;
-			while((!bestKBoundaryVertices.isEmpty()) && (k++<bestK)) {
+			ThreadPoolExecutor tpe = (ThreadPoolExecutor)Executors.newFixedThreadPool(PureParallelLoral.noOfThreads);
+			ArrayList<CascadeThread> parallelThreads = new ArrayList<CascadeThread>();
+			//System.out.println("*****************Size = "+cascadeList.size);
+			//System.out.println("*****************Visited SC Size = "+visitedSC.size());
+			while((!bestKBoundaryVertices.isEmpty()) && (k++<PureParallelLoral.bestK)) {
 				BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 				// Cascading Cost Calculation
 				int cascadeObjFn = cascadePathCost + boundaryVertex.deltaDistance;
-				cascadeObjFn = cascadePath(threshold,localMinCascadeCost,cascadeObjFn, cascadeList, visitedSC, boundaryVertex.serviceCenter, boundaryVertex.demandNode);
-				
-				if(cascadeObjFn<localMinCascadeCost) {
-					localMinCascadeCost = cascadeObjFn;
-					ParallelAdvanceLoral.copyPathToFinalList(cascadeObjFn,cascadeList);
-					cascadeList.removeFromIndex(visitedSC.size()-1);
-				}else {
-					// In my customized singly linked list the removal is done in constant time.
-					cascadeList.removeFromIndex(visitedSC.size()-1);
-					ParallelAdvanceLoral.copyPathToFinalList(baseObjFn,cascadeList);
-				}
+				CascadeThread cascadePathThread = new CascadeThread();
+				cascadePathThread.cascadeList = new CascadeList();
+				for(int i=0;i<cascadeList.size;i++)
+					cascadePathThread.cascadeList.insertAtEnd(cascadeList.list[i]);
+				parallelThreads.add(cascadePathThread);
+				// Cascading Cost Calculation
+				cascadePathThread.cascadePathCost = cascadeObjFn;
+				HashSet<ServiceCenter> visitedServiceCenter = new HashSet<ServiceCenter>();
+				for(ServiceCenter sc : visitedSC) 
+					visitedServiceCenter.add(sc);
+				cascadePathThread.visitedSC = visitedServiceCenter;
+				cascadePathThread.serviceCenter = boundaryVertex.serviceCenter;
+				cascadePathThread.demandNode = boundaryVertex.demandNode;
+				tpe.execute(cascadePathThread);
+			}
+			//Wait for all the threads to complete their execution
+			tpe.shutdown();
+			tpe.awaitTermination(7200, TimeUnit.SECONDS);
+			while(!tpe.isTerminated()) {
+				try {Thread.sleep(20);}catch(Exception e) {}
+			}
+			for(CascadeThread c : parallelThreads) {
+				finalReturnValue = Integer.min(finalReturnValue,c.finalReturnValue);
+			}
+			
+			if(finalReturnValue<baseObjFn) {
+				PureParallelLoral.copyPathToFinalList(finalReturnValue,cascadeList);
+				cascadeList.removeFromIndex(visitedSC.size()-1);
+			}else {
+				// In my customized singly linked list the removal is done in constant time.
+				cascadeList.removeFromIndex(visitedSC.size()-1);
+				PureParallelLoral.copyPathToFinalList(baseObjFn,cascadeList);
 			}
 			visitedSC.remove(serviceCenter);
-			return localMinCascadeCost;
+			
 		}
 	}
 	

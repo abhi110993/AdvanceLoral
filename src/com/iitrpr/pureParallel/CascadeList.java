@@ -1,4 +1,4 @@
-package com.iitrpr.threadIndependence;
+package com.iitrpr.pureParallel;
 import com.iitrpr.advanceLoral.CascadePath;
 
 public class CascadeList {
@@ -8,7 +8,7 @@ public class CascadeList {
 	
 	public CascadeList() {
 		size=0;
-		list = new CascadePath[ParallelAdvanceLoral.serviceMap.size()+2];
+		list = new CascadePath[PureParallelLoral.serviceMap.size()+50];
 	}
 	
 	public void insertAtEnd(CascadePath ele) {

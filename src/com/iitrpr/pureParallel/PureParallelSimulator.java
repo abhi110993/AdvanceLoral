@@ -1,24 +1,24 @@
-package com.iitrpr.threadIndependence;
+package com.iitrpr.pureParallel;
 
 import java.io.IOException;
 import java.util.HashMap;
 import com.iitrpr.advanceLoral.DemandNode;
 import com.iitrpr.advanceLoral.ServiceCenter;
 
-public class ParallelIndependentSimulator {
+public class PureParallelSimulator {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int[] demandToScRatio = {400};
+		int[] demandToScRatio = {500};
 		//int[] demandToScRatio = { 700};
 		for (int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");
 			PreProcessor.ratio = ratio;
 			PreProcessor preprocess = new PreProcessor();
-			ParallelAdvanceLoral loral = new ParallelAdvanceLoral();
-			ParallelAdvanceLoral.demandMap = new HashMap<String, DemandNode>();
-			ParallelAdvanceLoral.serviceMap = new HashMap<String, ServiceCenter>();
-			ParallelAdvanceLoral.outgoingEdgeMap = new HashMap<String, HashMap<String, Integer>>();
-			ParallelAdvanceLoral.incomingEdgeMap = new HashMap<String, HashMap<String, Integer>>();
+			PureParallelLoral loral = new PureParallelLoral();
+			PureParallelLoral.demandMap = new HashMap<String, DemandNode>();
+			PureParallelLoral.serviceMap = new HashMap<String, ServiceCenter>();
+			PureParallelLoral.outgoingEdgeMap = new HashMap<String, HashMap<String, Integer>>();
+			PureParallelLoral.incomingEdgeMap = new HashMap<String, HashMap<String, Integer>>();
 			// Order of loading service center first and then demand node must not be
 			// changed.
 			preprocess.loadServiceCenter();
@@ -26,12 +26,12 @@ public class ParallelIndependentSimulator {
 			preprocess.loadEdges();
 			preprocess.distanceMatrixToDemandNodes();
 			// Threshold is for limiting the cascading length
-			ParallelAdvanceLoral.threshold = ParallelAdvanceLoral.serviceMap.size();
-			ParallelAdvanceLoral.bestK = ParallelAdvanceLoral.serviceMap.size();
+			PureParallelLoral.threshold = PureParallelLoral.serviceMap.size();
+			PureParallelLoral.bestK = PureParallelLoral.serviceMap.size();
 			// ParallelAdvanceLoral.noOfThreads =
 			// Runtime.getRuntime().availableProcessors()-3;
-			ParallelAdvanceLoral.noOfThreads = 65;
-			System.out.println("Total no of threads available are = " + ParallelAdvanceLoral.noOfThreads);
+			PureParallelLoral.noOfThreads = 20;
+			System.out.println("Total no of threads available are = " + PureParallelLoral.noOfThreads);
 			double startTime = System.nanoTime();
 
 			loral.performLoral();
