@@ -236,7 +236,7 @@ public class PureParallelLoral {
 			int localMinCascadeCost = baseObjFn;
 			int k=0;
 			int cascadeObjFn=0;
-			if(multiThreading<3 || PureParallelLoral.noOfActiveThreads>(0.1*PureParallelLoral.noOfThreads)) {
+			if(multiThreading<20|| PureParallelLoral.noOfActiveThreads>(0.3*PureParallelLoral.noOfThreads)) {
 				while((!bestKBoundaryVertices.isEmpty()) && (k++<PureParallelLoral.bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// Cascading Cost Calculation
