@@ -1,5 +1,6 @@
 package com.iitrpr.pureParallel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,6 +28,8 @@ public class PureParallelLoral {
 	int objectiveFunction = 0,totalPenalizeCost = 0;
 	// This variable is only for testing.
 	int checkIndex = 1311;
+	static int multiThreading;
+	static int noOfActiveThreads;
 	// To store the cascade list which gives out the minimum cascade cost.
 	
 	/*
@@ -96,6 +99,7 @@ public class PureParallelLoral {
 				finalCascadeList = new CascadeList();
 				ThreadPoolExecutor tpe = (ThreadPoolExecutor)Executors.newFixedThreadPool(noOfThreads);
 				int k=0;
+				multiThreading=0;
 				while(!bestKBoundaryVertices.isEmpty() && (k++ < bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// This hash set to take care that the service center is not repeated.
@@ -122,7 +126,7 @@ public class PureParallelLoral {
 				
 				//System.out.println("Final Task Count : " + tpe.getTaskCount() + "Completed Task : "+ tpe.getCompletedTaskCount());
 				while(tpe.getTaskCount()!=tpe.getCompletedTaskCount()) {
-					//try {Thread.sleep(20);}catch(Exception e) {}
+					noOfActiveThreads = tpe.getActiveCount();
 				}
 				
 				//Wait for all the threads to complete their execution
@@ -174,6 +178,123 @@ public class PureParallelLoral {
 		//System.out.println("*************The total objective cost is : " + objectiveFunction + "*************");
 	}
 	
+	public static int cascadePath(int cascadePathCost, CascadeList cascadeList,HashSet<ServiceCenter> visitedSC, ServiceCenter serviceCenter, DemandNode demandNode) throws InterruptedException {
+		// Cascading happens till the time the visited service center length becomes equal to the threshold.
+		//System.out.println("Cascading Called for sc=" + serviceCenter.scid + " dn=" + demandNode.dnid);
+		//System.out.println("Inside a cascade and here the cascade cost is = "+cascadePathCost);
+		
+		if(cascadePathCost> PureParallelLoral.minCascadeCost || PureParallelLoral.threshold==0) {
+			return Integer.MAX_VALUE;
+		}
+		
+		// Distance between demand node and service center.
+		int distance = demandNode.getDistanceToSC(serviceCenter);
+		
+		// Update cascade list.
+		cascadeList.insertAtEnd(new CascadePath(serviceCenter, demandNode, distance));
+		
+		if(!serviceCenter.isfull()) {
+			PureParallelLoral.copyPathToFinalList(cascadePathCost,cascadeList);
+			return cascadePathCost;
+		} 
+		else if(visitedSC.size() >= PureParallelLoral.threshold) {
+			PureParallelLoral.copyPathToFinalList(cascadePathCost + serviceCenter.penalty,cascadeList);
+			return cascadePathCost + serviceCenter.penalty;
+		}
+		else {
+			// Adding the service center to the visited service center so that it is not further processed.
+			visitedSC.add(serviceCenter);
+			//Cascading needs to be implemented here.
+			// Base condition to check if we go ahead with the penalty.
+			int baseObjFn =  cascadePathCost + serviceCenter.penalty;
+			//System.out.println("Cascading again... + base ob fun= "+baseObjFn);
+			// Priority Queue to find the best pair of demand node and service center
+			PriorityQueue<BoundaryAndItsObjFn> bestKBoundaryVertices = new PriorityQueue<BoundaryAndItsObjFn>();
+			//This hashmap is used to find the best demand node between the service centers
+			HashMap<ServiceCenter,DemandNode> findBestDNodeForSC = new HashMap<ServiceCenter, DemandNode>();
+			// This loop is to iterate over all the boundary vertices
+			for(DemandNode boundaryDemandNode : serviceCenter.boundaryVertices) {
+				//System.out.println("** Boundary vertex processing "+ boundaryDemandNode.dnid +" **");
+				// This loop is to add the demand node and service center distance to the Tree Set.
+				for(Map.Entry<ServiceCenter, Integer> distanceDetail : boundaryDemandNode.distanceToSC.entrySet()) {
+					if((baseObjFn>distanceDetail.getValue()) && (!visitedSC.contains(distanceDetail.getKey())) && (demandNode.allocation!=distanceDetail.getKey())) {
+						DemandNode prevBestDNode = findBestDNodeForSC.get(distanceDetail.getKey());
+						if((prevBestDNode==null) || ((distanceDetail.getValue()-boundaryDemandNode.distanceToAllocatedSC)<(prevBestDNode.getDistanceToSC(distanceDetail.getKey())-prevBestDNode.distanceToAllocatedSC))) {
+							findBestDNodeForSC.put(distanceDetail.getKey(), boundaryDemandNode);
+						}
+					}
+				}
+			}
+				
+			for(Map.Entry<ServiceCenter, DemandNode> entry : findBestDNodeForSC.entrySet()) {
+				bestKBoundaryVertices.add(new BoundaryAndItsObjFn(entry.getValue().getDistanceToSC(entry.getKey())-entry.getValue().distanceToAllocatedSC, entry.getValue(), entry.getKey()));
+			}
+			
+			//findBestDNodeForSC.clear();
+			
+			// Initializing it to the base object function to compare it to all the cascading cost.
+			int localMinCascadeCost = baseObjFn;
+			int k=0;
+			int cascadeObjFn=0;
+			if(multiThreading<3 || PureParallelLoral.noOfActiveThreads>(0.1*PureParallelLoral.noOfThreads)) {
+				while((!bestKBoundaryVertices.isEmpty()) && (k++<PureParallelLoral.bestK)) {
+					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
+					// Cascading Cost Calculation
+					cascadeObjFn = cascadePathCost + boundaryVertex.deltaDistance;
+					cascadeObjFn = cascadePath(cascadeObjFn, cascadeList, visitedSC, boundaryVertex.serviceCenter, boundaryVertex.demandNode);
+					if(cascadeObjFn<localMinCascadeCost) {
+						localMinCascadeCost = cascadeObjFn;
+						PureParallelLoral.copyPathToFinalList(cascadeObjFn,cascadeList);
+						cascadeList.removeFromIndex(visitedSC.size()-1);
+					}else {
+						// In my customized singly linked list the removal is done in constant time.
+						cascadeList.removeFromIndex(visitedSC.size()-1);
+						PureParallelLoral.copyPathToFinalList(baseObjFn,cascadeList);
+					}
+				}
+			}else {
+				addMultiThreadValue();
+				ThreadPoolExecutor tpe = (ThreadPoolExecutor)Executors.newFixedThreadPool(PureParallelLoral.noOfThreads);
+				ArrayList<CascadeThread> parallelThreads = new ArrayList<CascadeThread>();
+				while((!bestKBoundaryVertices.isEmpty()) && (k++<PureParallelLoral.bestK)) {
+					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
+					// Cascading Cost Calculation
+					cascadeObjFn = cascadePathCost + boundaryVertex.deltaDistance;
+					CascadeThread cascadePathThread = new CascadeThread();
+					cascadePathThread.cascadeList = new CascadeList();
+					for(int i=0;i<cascadeList.size;i++)
+						cascadePathThread.cascadeList.insertAtEnd(cascadeList.list[i]);
+					parallelThreads.add(cascadePathThread);
+					// Cascading Cost Calculation
+					cascadePathThread.cascadePathCost = cascadeObjFn;
+					HashSet<ServiceCenter> visitedServiceCenter = new HashSet<ServiceCenter>();
+					for(ServiceCenter sc : visitedSC) 
+						visitedServiceCenter.add(sc);
+					cascadePathThread.visitedSC = visitedServiceCenter;
+					cascadePathThread.serviceCenter = boundaryVertex.serviceCenter;
+					cascadePathThread.demandNode = boundaryVertex.demandNode;
+					tpe.execute(cascadePathThread);
+				}
+				while(tpe.getTaskCount()!=tpe.getCompletedTaskCount()) {
+					
+				}
+				//Wait for all the threads to complete their execution
+				tpe.shutdown();
+				tpe.awaitTermination(7200, TimeUnit.SECONDS);
+				while(!tpe.isTerminated()) {
+					try {Thread.sleep(20);}catch(Exception e) {}
+				}
+				for(CascadeThread c : parallelThreads) {
+					localMinCascadeCost = Integer.min(localMinCascadeCost,c.finalReturnValue);
+				}
+				cascadeList.removeFromIndex(visitedSC.size()-1);
+				subtractMultiThreadValue();
+			}
+			visitedSC.remove(serviceCenter);
+			return localMinCascadeCost;
+		}
+	}
+	
 	public void performCascading(CascadeList cascadeList) {
 		//System.out.println("*********** Inside a perform Cascade function *********************");
 		for(int i=0; i<cascadeList.size; i++) {
@@ -196,6 +317,14 @@ public class PureParallelLoral {
 				}
 			}
 		}
+	}
+	
+	public static synchronized void addMultiThreadValue() {
+		multiThreading++;
+	}
+	
+	public static synchronized void subtractMultiThreadValue() {
+		multiThreading--;
 	}
 	
 	public static synchronized void copyPathToFinalList(int cascadeObjFn, CascadeList list) {
