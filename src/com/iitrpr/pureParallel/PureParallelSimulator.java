@@ -29,8 +29,8 @@ public class PureParallelSimulator {
 			PureParallelLoral.threshold = PureParallelLoral.serviceMap.size();
 			PureParallelLoral.bestK = PureParallelLoral.serviceMap.size();
 			// ParallelAdvanceLoral.noOfThreads =
-			// Runtime.getRuntime().availableProcessors()-3;
-			PureParallelLoral.noOfThreads = 20;
+			 
+			PureParallelLoral.noOfThreads = Runtime.getRuntime().availableProcessors()-5;
 			System.out.println("Total no of threads available are = " + PureParallelLoral.noOfThreads);
 			double startTime = System.nanoTime();
 
