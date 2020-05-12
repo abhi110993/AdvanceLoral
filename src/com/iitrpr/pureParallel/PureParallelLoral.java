@@ -127,6 +127,7 @@ public class PureParallelLoral {
 				//System.out.println("Final Task Count : " + tpe.getTaskCount() + "Completed Task : "+ tpe.getCompletedTaskCount());
 				while(tpe.getTaskCount()!=tpe.getCompletedTaskCount()) {
 					noOfActiveThreads = tpe.getActiveCount();
+					//System.out.println("noOfActiveThreads="+noOfActiveThreads);
 				}
 				
 				//Wait for all the threads to complete their execution
@@ -236,7 +237,8 @@ public class PureParallelLoral {
 			int localMinCascadeCost = baseObjFn;
 			int k=0;
 			int cascadeObjFn=0;
-			if(multiThreading<10 || PureParallelLoral.noOfActiveThreads>(0.4*PureParallelLoral.noOfThreads)) {
+			//System.out.println("multithreading Value = "+multiThreading);
+			if(multiThreading>10 || PureParallelLoral.noOfActiveThreads>(0.4*PureParallelLoral.noOfThreads)) {
 				while((!bestKBoundaryVertices.isEmpty()) && (k++<PureParallelLoral.bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// Cascading Cost Calculation
