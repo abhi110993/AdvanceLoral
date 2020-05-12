@@ -22,10 +22,10 @@ public class PureParallelLoral {
 	static HashMap<String, HashMap<String,Integer>> outgoingEdgeMap;
 	static HashMap<String, HashMap<String,Integer>> incomingEdgeMap;
 	static PriorityQueue<DnToScToken> demandNodeProcessQueue;
-	static int threshold,bestK;
-	static int noOfThreads,minCascadeCost;
+	static int threshold,bestK,noOfThreads;
+	static long minCascadeCost;
 	static CascadeList finalCascadeList;
-	int objectiveFunction = 0,totalPenalizeCost = 0;
+	long objectiveFunction = 0,totalPenalizeCost = 0;
 	// This variable is only for testing.
 	int checkIndex = 1311;
 	static int multiThreading;
@@ -179,7 +179,7 @@ public class PureParallelLoral {
 		//System.out.println("*************The total objective cost is : " + objectiveFunction + "*************");
 	}
 	
-	public static int cascadePath(int cascadePathCost, CascadeList cascadeList,HashSet<ServiceCenter> visitedSC, ServiceCenter serviceCenter, DemandNode demandNode) throws InterruptedException {
+	public static long cascadePath(long cascadePathCost, CascadeList cascadeList,HashSet<ServiceCenter> visitedSC, ServiceCenter serviceCenter, DemandNode demandNode) throws InterruptedException {
 		// Cascading happens till the time the visited service center length becomes equal to the threshold.
 		//System.out.println("Cascading Called for sc=" + serviceCenter.scid + " dn=" + demandNode.dnid);
 		//System.out.println("Inside a cascade and here the cascade cost is = "+cascadePathCost);
@@ -207,7 +207,7 @@ public class PureParallelLoral {
 			visitedSC.add(serviceCenter);
 			//Cascading needs to be implemented here.
 			// Base condition to check if we go ahead with the penalty.
-			int baseObjFn =  cascadePathCost + serviceCenter.penalty;
+			long baseObjFn =  cascadePathCost + serviceCenter.penalty;
 			//System.out.println("Cascading again... + base ob fun= "+baseObjFn);
 			// Priority Queue to find the best pair of demand node and service center
 			PriorityQueue<BoundaryAndItsObjFn> bestKBoundaryVertices = new PriorityQueue<BoundaryAndItsObjFn>();
@@ -234,11 +234,11 @@ public class PureParallelLoral {
 			//findBestDNodeForSC.clear();
 			
 			// Initializing it to the base object function to compare it to all the cascading cost.
-			int localMinCascadeCost = baseObjFn;
+			long localMinCascadeCost = baseObjFn;
 			int k=0;
-			int cascadeObjFn=0;
+			long cascadeObjFn=0;
 			//System.out.println("multithreading Value = "+multiThreading);
-			if(multiThreading>10 || PureParallelLoral.noOfActiveThreads>(0.4*PureParallelLoral.noOfThreads)) {
+			if(multiThreading>20 || PureParallelLoral.noOfActiveThreads>(0.4*PureParallelLoral.noOfThreads)) {
 				while((!bestKBoundaryVertices.isEmpty()) && (k++<PureParallelLoral.bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// Cascading Cost Calculation
@@ -256,7 +256,7 @@ public class PureParallelLoral {
 				}
 			}else {
 				addMultiThreadValue();
-				ThreadPoolExecutor tpe = (ThreadPoolExecutor)Executors.newFixedThreadPool(PureParallelLoral.noOfThreads/10);
+				ThreadPoolExecutor tpe = (ThreadPoolExecutor)Executors.newFixedThreadPool(PureParallelLoral.noOfThreads);
 				ArrayList<CascadeThread> parallelThreads = new ArrayList<CascadeThread>();
 				while((!bestKBoundaryVertices.isEmpty()) && (k++<PureParallelLoral.bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
@@ -287,7 +287,7 @@ public class PureParallelLoral {
 					try {Thread.sleep(20);}catch(Exception e) {}
 				}
 				for(CascadeThread c : parallelThreads) {
-					localMinCascadeCost = Integer.min(localMinCascadeCost,c.finalReturnValue);
+					localMinCascadeCost = Long.min(localMinCascadeCost,c.finalReturnValue);
 				}
 				cascadeList.removeFromIndex(visitedSC.size()-1);
 				subtractMultiThreadValue();
@@ -329,7 +329,7 @@ public class PureParallelLoral {
 		multiThreading--;
 	}
 	
-	public static synchronized void copyPathToFinalList(int cascadeObjFn, CascadeList list) {
+	public static synchronized void copyPathToFinalList(long cascadeObjFn, CascadeList list) {
 		//System.out.println("copyPathToFinalList initiated : cascadeObjFn = " + cascadeObjFn + " minCostAcrossAllThread = " + minCostAcrossAllThreads);
 		if(cascadeObjFn<minCascadeCost) {
 			minCascadeCost = cascadeObjFn;

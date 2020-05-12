@@ -6,12 +6,12 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 
 public class CascadeThread implements Runnable{
 	
-	int cascadePathCost;
+	long cascadePathCost;
 	CascadeList cascadeList;
 	HashSet<ServiceCenter> visitedSC;
 	ServiceCenter serviceCenter;
 	DemandNode demandNode;
-	int finalReturnValue;
+	long finalReturnValue;
 	
 	public CascadeThread() {
 		super();
