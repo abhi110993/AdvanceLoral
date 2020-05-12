@@ -30,7 +30,7 @@ public class PureParallelSimulator {
 			PureParallelLoral.bestK = PureParallelLoral.serviceMap.size();
 			// ParallelAdvanceLoral.noOfThreads =
 			 
-			PureParallelLoral.noOfThreads = Runtime.getRuntime().availableProcessors()-5;
+			PureParallelLoral.noOfThreads = 100;
 			System.out.println("Total no of threads available are = " + PureParallelLoral.noOfThreads);
 			double startTime = System.nanoTime();
 

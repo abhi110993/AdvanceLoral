@@ -236,7 +236,7 @@ public class PureParallelLoral {
 			int localMinCascadeCost = baseObjFn;
 			int k=0;
 			int cascadeObjFn=0;
-			if(multiThreading<20 || PureParallelLoral.noOfActiveThreads>(0.4*PureParallelLoral.noOfThreads)) {
+			if(multiThreading<10 || PureParallelLoral.noOfActiveThreads>(0.4*PureParallelLoral.noOfThreads)) {
 				while((!bestKBoundaryVertices.isEmpty()) && (k++<PureParallelLoral.bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// Cascading Cost Calculation
@@ -254,7 +254,7 @@ public class PureParallelLoral {
 				}
 			}else {
 				addMultiThreadValue();
-				ThreadPoolExecutor tpe = (ThreadPoolExecutor)Executors.newFixedThreadPool(PureParallelLoral.noOfThreads);
+				ThreadPoolExecutor tpe = (ThreadPoolExecutor)Executors.newFixedThreadPool(PureParallelLoral.noOfThreads/10);
 				ArrayList<CascadeThread> parallelThreads = new ArrayList<CascadeThread>();
 				while((!bestKBoundaryVertices.isEmpty()) && (k++<PureParallelLoral.bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
