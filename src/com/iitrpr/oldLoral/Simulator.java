@@ -29,7 +29,7 @@ public class Simulator {
 			// Threshold is for limiting the cascading length
 			Loral.threshold = Loral.serviceMap.size();
 			// BestK is for limiting the boundary nodes to service node pairs for cascading. 
-			Loral.bestK=Loral.serviceMap.size();
+			Loral.bestK=Loral.serviceMap.size()/2;
 			//Loral.bestK=Integer.MAX_VALUE;
 			double startTime = System.nanoTime();
 			

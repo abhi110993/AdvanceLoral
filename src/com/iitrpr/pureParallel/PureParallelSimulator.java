@@ -28,7 +28,7 @@ public class PureParallelSimulator {
 			preprocess.distanceMatrixToDemandNodes();
 			// Threshold is for limiting the cascading length
 			PureParallelLoral.threshold = PureParallelLoral.serviceMap.size();
-			PureParallelLoral.bestK = PureParallelLoral.serviceMap.size()/4;
+			PureParallelLoral.bestK = PureParallelLoral.serviceMap.size()/2;
 			// ParallelAdvanceLoral.noOfThreads =
 			 
 			PureParallelLoral.noOfThreads = Runtime.getRuntime().availableProcessors()-Runtime.getRuntime().availableProcessors()/10;
