@@ -15,7 +15,7 @@ public class PrepareServiceNodes {
 	static float ratioTotalCapacityToDemandNode = 0.7f;
 	static ArrayList<String> nodes;
 	static int[] capacities;
-	static int penaltyRange = 100;
+	static int penaltyRange = 50;
 	static Random random = new Random();
 	public static void main(String[] args) throws Exception{
 		int[] ratioDemandToService = {500};

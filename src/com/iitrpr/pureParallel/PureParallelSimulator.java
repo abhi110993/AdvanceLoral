@@ -1,5 +1,6 @@
 package com.iitrpr.pureParallel;
 
+import java.io.*;
 import java.io.IOException;
 import java.util.HashMap;
 import com.iitrpr.advanceLoral.DemandNode;
@@ -8,7 +9,7 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 public class PureParallelSimulator {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int[] demandToScRatio = {500};
+		int[] demandToScRatio = {300};
 		//int[] demandToScRatio = { 700};
 		for (int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");
@@ -27,7 +28,7 @@ public class PureParallelSimulator {
 			preprocess.distanceMatrixToDemandNodes();
 			// Threshold is for limiting the cascading length
 			PureParallelLoral.threshold = PureParallelLoral.serviceMap.size();
-			PureParallelLoral.bestK = PureParallelLoral.serviceMap.size();
+			PureParallelLoral.bestK = PureParallelLoral.serviceMap.size()/4;
 			// ParallelAdvanceLoral.noOfThreads =
 			 
 			PureParallelLoral.noOfThreads = Runtime.getRuntime().availableProcessors()-Runtime.getRuntime().availableProcessors()/10;
@@ -40,9 +41,13 @@ public class PureParallelSimulator {
 			double endTime = System.nanoTime();
 			// This will print all the allocation which the service center has attained.
 			//loral.printAllInformation();
+			
 			System.out.println("Total Execution time in ns = " + (endTime - startTime));
 			System.out.println("Total Objective Function = " + loral.objectiveFunction);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(new File("./output.txt")));
+			bw.write("Total Execution time in ns = " + (endTime - startTime)+"\n"+"Total Objective Function = " + loral.objectiveFunction);
 			//System.out.println("Total Cost because of cascading = " + loral.totalPenalizeCost);
+			bw.close();
 		}
 	}
 }
