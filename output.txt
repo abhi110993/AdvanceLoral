@@ -1,2 +1,2 @@
-Total Execution time in ns = 6202900.0
-Total Objective Function = 40
+Total Execution time in ns = 9.708890756E11
+Total Objective Function = 8518368
