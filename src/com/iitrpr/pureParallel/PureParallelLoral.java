@@ -238,7 +238,7 @@ public class PureParallelLoral {
 			int k=0;
 			long cascadeObjFn=0;
 			//System.out.println("multithreading Value = "+multiThreading);
-			if(multiThreading>PureParallelLoral.noOfThreads/4 || PureParallelLoral.noOfActiveThreads>(0.4*PureParallelLoral.noOfThreads)) {
+			if(multiThreading>noOfThreads/5 || PureParallelLoral.noOfActiveThreads>(0.2*PureParallelLoral.noOfThreads)) {
 				while((!bestKBoundaryVertices.isEmpty()) && (k++<PureParallelLoral.bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// Cascading Cost Calculation

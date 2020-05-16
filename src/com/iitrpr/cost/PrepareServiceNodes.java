@@ -18,7 +18,7 @@ public class PrepareServiceNodes {
 	static int penaltyRange = 50;
 	static Random random = new Random();
 	public static void main(String[] args) throws Exception{
-		int[] ratioDemandToService = {500};
+		int[] ratioDemandToService = {700};
 		//int[] ratioDemandToService = {400};
 		for(int ratio : ratioDemandToService) {
 			noOfSC=((noOfNodes)/(ratio+1));
