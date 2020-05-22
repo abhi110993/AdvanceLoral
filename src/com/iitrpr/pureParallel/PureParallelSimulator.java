@@ -9,7 +9,7 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 public class PureParallelSimulator {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int[] demandToScRatio = {900};
+		int[] demandToScRatio = {800};
 		//int[] demandToScRatio = { 700};
 		for (int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");
