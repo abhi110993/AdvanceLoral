@@ -9,7 +9,7 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 public class PureParallelSimulator {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int[] demandToScRatio = {1300};
+		int[] demandToScRatio = {1100};
 		//int[] demandToScRatio = { 700};
 		for (int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");
@@ -28,7 +28,7 @@ public class PureParallelSimulator {
 			preprocess.distanceMatrixToDemandNodes();
 			// Threshold is for limiting the cascading length
 			PureParallelLoral.threshold = PureParallelLoral.serviceMap.size();
-			PureParallelLoral.bestK = (int) (PureParallelLoral.serviceMap.size()*0.15f);
+			PureParallelLoral.bestK = (int) (PureParallelLoral.serviceMap.size()*0.25f);
 			// ParallelAdvanceLoral.noOfThreads =
 			 
 			PureParallelLoral.noOfThreads = 80;
