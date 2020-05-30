@@ -28,8 +28,9 @@ public class PureParallelLoral {
 	long objectiveFunction = 0,totalPenalizeCost = 0;
 	// This variable is only for testing.
 	int checkIndex = 1311;
-	static int multiThreading;
+	static int multiThreading,childSpawnLimit;
 	static int noOfActiveThreads;
+	static float percentThreadForChildSpawn;
 	// To store the cascade list which gives out the minimum cascade cost.
 	
 	/*
@@ -50,7 +51,7 @@ public class PureParallelLoral {
 			//System.out.println(token.demandNode.dnid);
 			//System.out.println(objectiveFunction);
 			//System.out.println("Processing : DN = "+token.demandNode.dnid + " sc = " + token.serviceCenter.scid + " Dis=" + token.distance);
-			System.out.println("Demand node in execution = " + noOfTokensExecuted++);
+			//System.out.println("Demand node in execution = " + noOfTokensExecuted++);
 			
 			// If the service center has the capacity then allocate the demand node to the service center.
 			if(!token.serviceCenter.isfull()) {
@@ -238,7 +239,7 @@ public class PureParallelLoral {
 			int k=0;
 			long cascadeObjFn=0;
 			//System.out.println("multithreading Value = "+multiThreading);
-			if(multiThreading>30 || PureParallelLoral.noOfActiveThreads>(0.04f*PureParallelLoral.noOfThreads)) {
+			if(multiThreading>childSpawnLimit || PureParallelLoral.noOfActiveThreads>(percentThreadForChildSpawn*PureParallelLoral.noOfThreads)) {
 				while((!bestKBoundaryVertices.isEmpty()) && (k++<PureParallelLoral.bestK)) {
 					BoundaryAndItsObjFn boundaryVertex = bestKBoundaryVertices.poll();
 					// Cascading Cost Calculation
