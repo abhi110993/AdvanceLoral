@@ -9,7 +9,7 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 public class PureParallelSimulator {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int[] demandToScRatio = {900,800};
+		int[] demandToScRatio = {700};
 		//int[] demandToScRatio = { 700};
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("./output.txt")));
 		for (int ratio : demandToScRatio) {
@@ -34,11 +34,12 @@ public class PureParallelSimulator {
 					PureParallelLoral.threshold = PureParallelLoral.serviceMap.size();
 					PureParallelLoral.bestK = (int) (PureParallelLoral.serviceMap.size()*0.25f);
 					// ParallelAdvanceLoral.noOfThreads =
-					PureParallelLoral.noOfThreads = 80;
+					PureParallelLoral.noOfThreads = 70;
+					PureParallelLoral.noOfChildSpawn=0;
 					System.out.println("******************** demandToScRatio = "+ratio+"***************************************");
 					System.out.println("Total no of threads available are = " + PureParallelLoral.noOfThreads);
 					System.out.println("percentThreadForChildSpawn = " + PureParallelLoral.percentThreadForChildSpawn);
-					System.out.println("childSpawnLimit = " + PureParallelLoral.childSpawnLimit);
+					System.out.println("childSpawnLimit = " + PureParallelLoral.childSpawnLimit);System.out.println("childSpawnLimit = " + PureParallelLoral.childSpawnLimit);
 					
 					double startTime = System.nanoTime();
 					
@@ -51,7 +52,8 @@ public class PureParallelSimulator {
 					System.out.println("Total Execution time in ns = " + (endTime - startTime));
 					System.out.println("Total Objective Function = " + loral.objectiveFunction);
 					
-					bw.write("Total Execution time in ns = " + (endTime - startTime)+"\n"+"Total Objective Function = " + loral.objectiveFunction);
+					bw.write("Ratio= " + ratio+"\n"+"percent threads = " + loral.percentThreadForChildSpawn+"\n"+" child spawn lim="+PureParallelLoral.childSpawnLimit);
+					bw.write("Time= " + (endTime - startTime)+"\n"+"Obj fn = " + loral.objectiveFunction+"\n"+" No of child spawn="+PureParallelLoral.noOfChildSpawn);
 					//System.out.println("Total Cost because of cascading = " + loral.totalPenalizeCost);
 				}
 			}
