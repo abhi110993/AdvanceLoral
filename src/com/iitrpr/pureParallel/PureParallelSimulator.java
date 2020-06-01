@@ -9,13 +9,13 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 public class PureParallelSimulator {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int[] demandToScRatio = {700};
+		int[] demandToScRatio = {900};
 		//int[] demandToScRatio = { 700};
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("./output.txt")));
 		for (int ratio : demandToScRatio) {
-			for(int i=0;i<=20;i=i+5) {
+			for(int i=0;i<=10;i=i+2) {
 				PureParallelLoral.percentThreadForChildSpawn = (float)i/100;
-				for(int j=0;j<=20;j+=5) {
+				for(int j=0;j<=10;j+=2) {
 					PureParallelLoral.childSpawnLimit=j;
 					PreProcessor.ratio = ratio;
 					PreProcessor preprocess = new PreProcessor();
