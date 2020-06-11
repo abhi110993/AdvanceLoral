@@ -9,7 +9,7 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 public class PureParallelSimulator {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int[] demandToScRatio = {900};
+		int[] demandToScRatio = {300,400,500};
 		//int[] demandToScRatio = { 700};
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("./output.txt")));
 		for (int ratio : demandToScRatio) {
