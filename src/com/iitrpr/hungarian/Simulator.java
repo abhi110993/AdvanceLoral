@@ -6,7 +6,7 @@ public class Simulator {
 
 	public static void main(String[] args) {
 
-		int[] demandToScRatio = { 300, 400, 500 };
+		int[] demandToScRatio = { 300 };
 		// int[] demandToScRatio = { 100 };
 
 		try {
