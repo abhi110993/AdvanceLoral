@@ -87,7 +87,7 @@ public class PreProcessor {
 		}
 		br.close();
 		HashMap<Integer, String> nodeMap = new HashMap<Integer, String>();
-		br = new BufferedReader(new FileReader(this.fileName + "nodes.txt"));
+		br = new BufferedReader(new FileReader("./Resource/nodes.txt"));
 		line = "";
 		int i = 0;
 		while ((line = br.readLine()) != null) {

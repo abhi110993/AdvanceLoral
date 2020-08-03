@@ -1,9 +1,7 @@
 package com.iitrpr.oldLoral;
 import java.io.*;
 import java.util.HashMap;
-
 import com.iitrpr.oldLoral.PreProcessor;
-import com.iitrpr.pureParallel.PureParallelLoral;
 import com.iitrpr.advanceLoral.DemandNode;
 import com.iitrpr.oldLoral.Loral;
 import com.iitrpr.advanceLoral.ServiceCenter;
@@ -12,7 +10,7 @@ public class Simulator {
 
 	public static void main(String[] args) throws IOException{
 		//int[] demandToScRatio = {400, 500,600,700 };
-		int[] demandToScRatio = {40,70,90};
+		int[] demandToScRatio = {30,60,90};
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("./output.txt")));
 		for(int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");

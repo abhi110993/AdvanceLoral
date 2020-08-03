@@ -23,7 +23,7 @@ public class ProcessData {
 		applyAllPairShortestPathAlgorithm();
 		System.out.println("All pair shortest path is applied");
 		
-		int[] ratioDemandToService = {40,70,90};
+		int[] ratioDemandToService = {30,60,90};
 		//int[] ratioDemandToService = {2};
 		for(int ratio : ratioDemandToService) {
 	       	//This would take the ratio and all other details to prepare the service nodes

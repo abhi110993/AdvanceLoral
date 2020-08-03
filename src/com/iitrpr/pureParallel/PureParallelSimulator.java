@@ -9,7 +9,7 @@ import com.iitrpr.advanceLoral.ServiceCenter;
 public class PureParallelSimulator {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int[] demandToScRatio = { 40 };
+		int[] demandToScRatio = { 40,70,90};
 		// int[] demandToScRatio = { 700};
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("./output.txt")));
 		for (int ratio : demandToScRatio) {
@@ -39,7 +39,7 @@ public class PureParallelSimulator {
 			System.out.println("Total no of threads available are = " + PureParallelLoral.noOfThreads);
 			System.out.println("percentThreadForChildSpawn = " + PureParallelLoral.percentThreadForChildSpawn);
 			System.out.println("childSpawnLimit = " + PureParallelLoral.childSpawnLimit);
-			System.out.println("childSpawnLimit = " + PureParallelLoral.childSpawnLimit + "\n\n");
+			System.out.println("childSpawnLimit = " + PureParallelLoral.childSpawnLimit);
 
 			double startTime = System.nanoTime();
 
@@ -52,13 +52,12 @@ public class PureParallelSimulator {
 			System.out.println("Total Execution time in ns = " + (endTime - startTime));
 			System.out.println("Total Objective Function = " + loral.objectiveFunction);
 
-			bw.write("Ratio= " + ratio + "\n" + "percent threads = " + loral.percentThreadForChildSpawn + "\n"
+			bw.write("Ratio= " + ratio + "\n" + "percent threads = " + PureParallelLoral.percentThreadForChildSpawn + "\n"
 					+ " child spawn lim=" + PureParallelLoral.childSpawnLimit);
 			bw.write("Time= " + (endTime - startTime) + "\n" + "Obj fn = " + loral.objectiveFunction + "\n"
-					+ " No of child spawn=" + PureParallelLoral.noOfChildSpawn);
+					+ " No of child spawn=" + PureParallelLoral.noOfChildSpawn+ "\n\n");
 			// System.out.println("Total Cost because of cascading = " +
 			// loral.totalPenalizeCost);
-
 		}
 		bw.close();
 	}

@@ -12,13 +12,13 @@ public class PrepareServiceNodes {
 	static int noOfNodes = 500;
 	static int noOfSC;
 	static HashMap<String, Integer> nodesIndexMap;
-	static float ratioTotalCapacityToDemandNode = 0.7f;
+	static float ratioTotalCapacityToDemandNode = 0.5f;
 	static ArrayList<String> nodes;
 	static int[] capacities;
 	static int penaltyRange = 200;
 	static Random random = new Random();
 	public static void main(String[] args) throws Exception{
-		int[] ratioDemandToService = {40,70,90};
+		int[] ratioDemandToService = {30,60,90};
 		for(int ratio : ratioDemandToService) {
 			noOfSC=((noOfNodes)/(ratio+1));
 			String path = "./dataset/"+ratio+"/ServiceCenter.txt";
