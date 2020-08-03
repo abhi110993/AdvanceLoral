@@ -11,8 +11,8 @@ public class PreProcessor {
     
 	static int ratio;
 	private String serviceDetails = "./dataset/"+ratio+"/ServiceCenter.txt";
-	private String allNodesDetails = "./dataset/"+ratio+"/nodes.txt";
-	private String allEdgeDetails = "./dataset/"+ratio+"/edges.txt";
+	private String allNodesDetails = "./Resource/nodes.txt";
+	private String allEdgeDetails = "./Resource/edges.txt";
 	private String distanceMatrix = "./dataset/"+ratio+"/CostMatrix.txt";
 	private BufferedReader br;
 	private HashMap<Integer, DemandNode> demandNodeIndexMapping = new HashMap<Integer, DemandNode>();

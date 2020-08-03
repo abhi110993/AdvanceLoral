@@ -3,6 +3,7 @@ import java.io.*;
 import java.util.HashMap;
 
 import com.iitrpr.oldLoral.PreProcessor;
+import com.iitrpr.pureParallel.PureParallelLoral;
 import com.iitrpr.advanceLoral.DemandNode;
 import com.iitrpr.oldLoral.Loral;
 import com.iitrpr.advanceLoral.ServiceCenter;
@@ -11,7 +12,8 @@ public class Simulator {
 
 	public static void main(String[] args) throws IOException{
 		//int[] demandToScRatio = {400, 500,600,700 };
-		int[] demandToScRatio = {1300};
+		int[] demandToScRatio = {40,70,90};
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("./output.txt")));
 		for(int ratio : demandToScRatio) {
 			System.out.println("***********************************************************");
 			PreProcessor.ratio=ratio;
@@ -40,9 +42,13 @@ public class Simulator {
 			//loral.printAllInformation();
 			System.out.println("Total Execution time in ns = " + (endTime - startTime));
 			System.out.println("Total Objective Function = " + loral.objectiveFunction);
+			
+			bw.write("Ratio= " + ratio+"\n");
+			bw.write("Time= " + (endTime - startTime)+"\n"+"Obj fn = " + loral.objectiveFunction+"\n\n");
+			
 		}
 		
-		
+		bw.close();
 	} 
 
 }

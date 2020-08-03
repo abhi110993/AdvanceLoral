@@ -1,0 +1,5 @@
+Ratio= 40
+percent threads = 0.9
+ child spawn lim=2Time= 2.4954109E9
+Obj fn = 26569
+ No of child spawn=3907
